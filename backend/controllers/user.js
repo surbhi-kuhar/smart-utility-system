@@ -83,3 +83,58 @@ module.exports.loginUser = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+module.exports.updateUser = async (req, res, next) => {
+  const { id } = req.params;
+  const { email, password, name, mobilenumber, address } = req.body;
+
+  try {
+    // Find the user by ID
+    const user = await prisma.user.findUnique({
+      where: { id: id }, // Assuming id is an integer. Adjust if it's a different type.
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // Update the user details
+    const updatedUser = await prisma.user.update({
+      where: { id: id },
+      data: {
+        email: email || user.email,
+        password: password ? await bcrypt.hash(password, 10) : user.password,
+        name: name || user.name,
+        mobilenumber: mobilenumber || user.mobilenumber,
+        address: address || user.address,
+      },
+    });
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+module.exports.deleteUser = async (req, res, next) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await prisma.user.delete({
+      where: { id: userId },
+    });
+    res.status(200).json({
+      message: "User deleted successfully",
+      user: user,
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
