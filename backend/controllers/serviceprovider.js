@@ -134,3 +134,44 @@ module.exports.deleteProvider = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+module.exports.getServiceProviders = async (req, res, next) => {
+  const { service } = req.body;
+
+  try {
+    const serviceProviders = await prisma.serviceProvider.findMany({
+      where: {
+        service: service,
+      },
+      include: {
+        ratings: true, // Include the ratings to calculate the average rating
+      },
+    });
+
+    // Calculate the average rating for each service provider
+    const serviceProvidersWithAvgRating = serviceProviders.map((provider) => {
+      const totalRatings = provider.ratings.length;
+      const sumRatings = provider.ratings.reduce((sum, rating) => sum + rating.rating, 0);
+      const avgRating = totalRatings > 0 ? sumRatings / totalRatings : 0;
+
+      return {
+        ...provider,
+        avgRating,
+      };
+    });
+
+    // Sort the service providers by their average rating in descending order
+    serviceProvidersWithAvgRating.sort((a, b) => b.avgRating - a.avgRating);
+
+    res.status(200).json({
+      message: "Service providers found",
+      serviceProviders: serviceProvidersWithAvgRating,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Unable to find service providers",
+      error: err.message,
+    });
+  }
+};
+

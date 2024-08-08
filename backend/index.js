@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const user = require("./routes/user");
 const serviceprovider = require("./routes/serviceprovider");
 const booking = require("./routes/booking");
+const rating = require("./routes/rating");
 const bodyParser = require("body-parser");
 
 dotenv.config();
@@ -12,7 +13,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use("/api/v1/user", user);
 app.use("/api/v1/serviceprovider", serviceprovider);
-app.use("/api/v1/booking",booking);
+app.use("/api/v1/booking", booking);
+app.use("/api/v1/rating", rating);
 
 // mongoose
 //   .connect(process.env.MONGO_URI)
