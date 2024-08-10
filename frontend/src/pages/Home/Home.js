@@ -1,12 +1,34 @@
-// src/HomePage.js
 import React from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
-import image1 from "../../images/ac-service.jpg"; // Adjust the path as necessary
+import { useInView } from "react-intersection-observer";
+import { useNavigate } from "react-router-dom";
+import {
+  FaTools,
+  FaPaintRoller,
+  FaPlug,
+  FaBroom,
+  FaHammer,
+  FaWrench,
+  FaSnowflake,
+  FaBug,
+  FaLeaf,
+  FaSpa,
+  FaDumbbell,
+  FaChalkboardTeacher,
+} from "react-icons/fa";
+import image1 from "../../images/ac-service.jpg";
 import image2 from "../../images/painter.jpg";
 import image3 from "../../images/electrician.jpg";
 import image4 from "../../images/carpentry.jpg";
 
 const Home = () => {
+  const navigate = useNavigate(); // Hook for navigation
+  const { ref: infoRef, inView: infoInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1, // Adjust threshold as needed
+  });
+
   const images = [
     { src: image1, text: "AC Service", textPosition: "bottom" },
     { src: image2, text: "Painting", textPosition: "top" },
@@ -14,9 +36,28 @@ const Home = () => {
     { src: image4, text: "Carpentry", textPosition: "top" },
   ];
 
+  const services = [
+    { icon: FaBroom, text: "Cleaning" },
+    { icon: FaTools, text: "Plumbing" },
+    { icon: FaPlug, text: "Electrical" },
+    { icon: FaPaintRoller, text: "Painting" },
+    { icon: FaHammer, text: "Carpentry" },
+    { icon: FaWrench, text: "Appliance Repair" },
+    { icon: FaSnowflake, text: "HVAC Services" },
+    { icon: FaBug, text: "Pest Control" },
+    { icon: FaLeaf, text: "Gardening & Landscaping" },
+    { icon: FaSpa, text: "Beauty & Wellness" },
+    { icon: FaDumbbell, text: "Fitness Training" },
+    { icon: FaChalkboardTeacher, text: "Tutoring" },
+  ];
+
+  const handleServiceRequest = (service) => {
+    navigate(`/providers/${service}`);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-r from-purple-500 to-blue-500 text-white">
-      <section className="py-16 bg-white text-gray-800">
+    <div className="min-h-screen">
+      <section className="py-16 text-gray-800">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {images.map((img, index) => (
@@ -43,6 +84,45 @@ const Home = () => {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Information Section */}
+      <section
+        ref={infoRef}
+        className="flex flex-col lg:flex-row items-center justify-between text-center py-16"
+      >
+        <motion.div
+          className="w-full lg:w-1/2 px-8"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: infoInView ? 1 : 0, y: infoInView ? 0 : 50 }}
+          transition={{ duration: 1.5 }}
+        >
+          <h2 className="text-3xl md:text-3xl font-bold mb-4">
+            Home Services at Your Doorstep
+          </h2>
+          <p className="text-base md:text-xl mb-8">
+            Our platform connects you with top-rated professionals for all your
+            home service needs. From plumbing to electrical work, we provide
+            reliable services right at your doorstep.
+          </p>
+        </motion.div>
+        <motion.div
+          className="w-full lg:w-1/2 grid grid-cols-2 md:grid-cols-4 gap-4 px-8"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: infoInView ? 1 : 0, y: infoInView ? 0 : 50 }}
+          transition={{ duration: 1, delay: 0.5 }}
+        >
+          {services.map((service, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center justify-center bg-white text-blue-500 p-4 rounded-lg shadow-md hover:bg-blue-500 hover:text-white transition-all duration-300 w-24 h-24"
+              onClick={() => handleServiceRequest(service.text)}
+            >
+              <service.icon className="text-4xl mb-2" />
+              <p className="text-sm font-semibold">{service.text}</p>
+            </div>
+          ))}
+        </motion.div>
       </section>
 
       {/* Call to Action Section */}

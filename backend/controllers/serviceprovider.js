@@ -136,7 +136,7 @@ module.exports.deleteProvider = async (req, res, next) => {
 };
 
 module.exports.getServiceProviders = async (req, res, next) => {
-  const { service } = req.body;
+  const { service } = req.params;
 
   try {
     const serviceProviders = await prisma.serviceProvider.findMany({
@@ -144,14 +144,16 @@ module.exports.getServiceProviders = async (req, res, next) => {
         service: service,
       },
       include: {
-        ratings: true, // Include the ratings to calculate the average rating
+        ratings: true,
       },
     });
 
-    // Calculate the average rating for each service provider
     const serviceProvidersWithAvgRating = serviceProviders.map((provider) => {
       const totalRatings = provider.ratings.length;
-      const sumRatings = provider.ratings.reduce((sum, rating) => sum + rating.rating, 0);
+      const sumRatings = provider.ratings.reduce(
+        (sum, rating) => sum + rating.rating,
+        0
+      );
       const avgRating = totalRatings > 0 ? sumRatings / totalRatings : 0;
 
       return {
@@ -160,7 +162,6 @@ module.exports.getServiceProviders = async (req, res, next) => {
       };
     });
 
-    // Sort the service providers by their average rating in descending order
     serviceProvidersWithAvgRating.sort((a, b) => b.avgRating - a.avgRating);
 
     res.status(200).json({
@@ -174,4 +175,3 @@ module.exports.getServiceProviders = async (req, res, next) => {
     });
   }
 };
-

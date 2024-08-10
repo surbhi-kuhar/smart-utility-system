@@ -74,7 +74,7 @@ const Header = () => {
         />
       </header>
       {isMenuOpen && (
-        <nav className="md:hidden bg-white border-t border-gray-200">
+        <nav className="md:hidden bg-white border-t border-gray-200 absolute top-[60px] left-0 w-full z-40">
           <div className="container mx-auto px-4 py-2">
             <Link
               to="/"

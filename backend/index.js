@@ -5,12 +5,15 @@ const serviceprovider = require("./routes/serviceprovider");
 const booking = require("./routes/booking");
 const rating = require("./routes/rating");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 dotenv.config();
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
+
 app.use("/api/v1/user", user);
 app.use("/api/v1/serviceprovider", serviceprovider);
 app.use("/api/v1/booking", booking);
