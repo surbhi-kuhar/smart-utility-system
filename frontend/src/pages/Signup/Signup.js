@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import customerImage from "../../images/customer.png"; // adjust the path as necessary
 import serviceProviderImage from "../../images/service-provider-image.png"; // adjust the path as necessary
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [selectedRole, setSelectedRole] = useState(null);
@@ -55,8 +57,60 @@ const Signup = () => {
 };
 
 const CustomerSignupForm = () => {
+  const navigate = useNavigate();
+
+  const setCookie = (name, value, days) => {
+    const d = new Date();
+    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = name + "=" + (value || "") + ";" + expires + ";path=/";
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    const formdata = {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      name: formData.get("name"),
+      address: formData.get("address"),
+      mobilenumber: formData.get("mobile"),
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3300/api/v1/user/create",
+        formdata
+      );
+
+      if (response.status === 201) {
+        console.log("Signup successful", response.data);
+        // Set the token in cookies
+        setCookie("token", response.data.token, 10); // Set cookie with 10 days expiration
+        // Handle success (e.g., redirect to login or show a success message)
+        navigate("/");
+      } else {
+        // Handle non-201 responses
+        throw new Error("Signup failed");
+      }
+    } catch (error) {
+      if (error.response) {
+        // Handle errors from the server response
+        console.error("Error:", error.response.data.message);
+        // Display specific error message to the user
+        alert(`Signup failed: ${error.response.data.message}`);
+      } else {
+        // Handle other errors (e.g., network issues)
+        console.error("Error:", error.message);
+        // Show a generic error message
+        alert("An unexpected error occurred. Please try again.");
+      }
+    }
+  };
+
   return (
-    <form className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit}>
       <div className="text-center">
         <h3 className="text-xl font-bold text-gray-800">Customer Sign Up</h3>
         <p className="mt-1 text-gray-600">Please fill in the details below.</p>
@@ -148,8 +202,47 @@ const CustomerSignupForm = () => {
 };
 
 const ServiceProviderSignupForm = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    const formdata = {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      name: formData.get("name"),
+      age: parseInt(formData.get("age"), 10),
+      address: formData.get("address"),
+      service: formData.get("service"),
+      mobilenumber: formData.get("mobile"),
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3300/api/v1/serviceprovider/create",
+        formdata
+      );
+
+      if (response.status === 201) {
+        console.log("Signup successful", response.data);
+        // Handle success (e.g., redirect to login or show a success message)
+        navigate("/");
+      } else {
+        // Handle non-201 responses
+        throw new Error("Signup failed");
+      }
+    } catch (error) {
+      console.error(
+        "Error:",
+        error.response ? error.response.data : error.message
+      );
+      // Handle error (e.g., show an error message)
+    }
+  };
+
   return (
-    <form className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit}>
       <div className="text-center">
         <h3 className="text-xl font-bold text-gray-800">
           Service Provider Sign Up

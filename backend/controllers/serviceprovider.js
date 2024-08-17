@@ -7,6 +7,18 @@ module.exports.createProvider = async (req, res, next) => {
   console.log(req.body);
   const { email, password, name, age, address, service, mobilenumber } =
     req.body;
+
+  // Check if a provider with the same phone number already exists
+  const existingProvider = await prisma.serviceProvider.findUnique({
+    where: { mobilenumber: mobilenumber, email: email },
+  });
+
+  if (existingProvider) {
+    return res
+      .status(400)
+      .json({ error: "A provider with this phone number already exists" });
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {

@@ -8,20 +8,25 @@ module.exports.createUser = async (req, res, next) => {
   const { email, password, name, mobilenumber, address } = req.body;
 
   try {
-    const userAlready = await prisma.user.findFirst({
+    const existingUser = await prisma.user.findFirst({
       where: {
-        mobilenumber: mobilenumber,
-      },
+        OR: [
+          { email: email },
+          { mobilenumber: mobilenumber }
+        ]
+      }
     });
 
-    if (userAlready) {
-      return res.status(409).json({
-        message: "User already exists",
-      });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return res.status(409).json({ message: "Email already exists" });
+      }
+      if (existingUser.mobilenumber === mobilenumber) {
+        return res.status(409).json({ message: "Mobile number already exists" });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("hashedpassword", hashedPassword);
     const user = await prisma.user.create({
       data: {
         email: email,
@@ -31,14 +36,12 @@ module.exports.createUser = async (req, res, next) => {
         address: address,
       },
     });
-    console.log(user);
-    console.log(user.id);
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "10d",
     });
 
-    res.status(200).json({
+    res.status(201).json({
       token: token,
       user: user,
       message: "User created successfully",
@@ -48,6 +51,7 @@ module.exports.createUser = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 module.exports.loginUser = async (req, res, next) => {
   console.log(req.body);

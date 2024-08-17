@@ -1,7 +1,35 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie"; // Import the js-cookie library
 
 function Login() {
+  const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:3300/api/v1/user/login", {
+        mobilenumber: mobile,
+        password: password,
+      });
+
+      console.log("response is ", response);
+
+      // Store the JWT token in a cookie
+      Cookies.set("token", response.data.token, { expires: 10 }); // 10 days expiry
+
+      // Redirect to the desired page after successful login
+      navigate("/");
+    } catch (err) {
+      setError("Login failed. Please check your credentials.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 p-4">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-sm w-full space-y-8">
@@ -13,7 +41,7 @@ function Login() {
             Welcome back! Please enter your details.
           </p>
         </div>
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-1">
             <label
               htmlFor="mobile"
@@ -31,6 +59,8 @@ function Login() {
                 type="tel"
                 pattern="[0-9]{10}"
                 required
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter mobile number"
               />
@@ -48,33 +78,12 @@ function Login() {
               name="password"
               type="password"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
-            </div>
-            <div className="text-sm">
-              <a
-                href="#"
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                Forgot your password?
-              </a>
-            </div>
-          </div>
+          {error && <div className="text-red-500 text-sm">{error}</div>}
           <div>
             <button
               type="submit"
