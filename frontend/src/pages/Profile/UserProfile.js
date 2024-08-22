@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const UserProfile = ({ userId }) => {
-  const [profileData, setProfileData] = useState({});
+  const [profileData, setProfileData] = useState({
+    name: "",
+    email: "",
+    mobilenumber: "",
+    address: "",
+  });
   const [editMode, setEditMode] = useState(false);
   const navigate = useNavigate();
 
@@ -12,9 +18,22 @@ const UserProfile = ({ userId }) => {
     const fetchProfileData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3300/api/v1/user/profile/${userId}`
+          `http://localhost:3300/api/v1/user/find`,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get("token")}`,
+            },
+          }
         );
-        setProfileData(response.data);
+
+        console.log(response);
+        const userData = response.data.user;
+        setProfileData({
+          name: userData.name,
+          email: userData.email,
+          mobilenumber: userData.mobilenumber,
+          address: userData.address,
+        });
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
@@ -30,10 +49,18 @@ const UserProfile = ({ userId }) => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(
-        `http://localhost:3300/api/v1/user/profile/${userId}`,
-        profileData
+      const { data } = await axios.post(
+        `http://localhost:3300/api/v1/user/update`,
+        profileData,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
       );
+
+      console.log(data);
+
       setEditMode(false);
       alert("Profile updated successfully!");
     } catch (error) {
@@ -43,7 +70,17 @@ const UserProfile = ({ userId }) => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3300/api/v1/user/profile/${userId}`);
+      const { data } = await axios.delete(
+        `http://localhost:3300/api/v1/user/delete`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
+
+      console.log(data);
+
       alert("Account deleted successfully!");
       navigate("/"); // Redirect to home after deletion
     } catch (error) {
@@ -65,7 +102,7 @@ const UserProfile = ({ userId }) => {
             <input
               type="text"
               name="name"
-              value={profileData.name || ""}
+              value={profileData.name}
               onChange={handleInputChange}
               disabled={!editMode}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -78,7 +115,7 @@ const UserProfile = ({ userId }) => {
             <input
               type="email"
               name="email"
-              value={profileData.email || ""}
+              value={profileData.email}
               onChange={handleInputChange}
               disabled={!editMode}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -91,7 +128,7 @@ const UserProfile = ({ userId }) => {
             <input
               type="text"
               name="mobilenumber"
-              value={profileData.mobilenumber || ""}
+              value={profileData.mobilenumber}
               onChange={handleInputChange}
               disabled={!editMode}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -104,7 +141,7 @@ const UserProfile = ({ userId }) => {
             <input
               type="text"
               name="address"
-              value={profileData.address || ""}
+              value={profileData.address}
               onChange={handleInputChange}
               disabled={!editMode}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

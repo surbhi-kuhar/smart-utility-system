@@ -1,15 +1,82 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 import logo from "../images/logo.png";
+import axios from "axios";
+import { FaUser } from "react-icons/fa"; // Import an icon for the Profile button
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState(null);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen((prev) => !prev);
+  }, []);
+
+  const fetchUserType = useCallback(async () => {
+    try {
+      const token = Cookies.get("token");
+      if (!token) return;
+
+      // Check if userType is already stored
+      const cachedUserType = localStorage.getItem("userType");
+      if (cachedUserType) {
+        setUserType(cachedUserType);
+        return;
+      }
+
+      // Try fetching user data
+      try {
+        await axios.get("http://localhost:3300/api/v1/user/find", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserType("user");
+        localStorage.setItem("userType", "user");
+        return;
+      } catch (error) {
+        if (error.response && error.response.status !== 401) {
+          console.error("Error fetching user type", error);
+        }
+      }
+
+      // Try fetching provider data
+      try {
+        await axios.get("http://localhost:3300/api/v1/serviceprovider/find", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserType("serviceprovider");
+        localStorage.setItem("userType", "serviceprovider");
+      } catch (error) {
+        if (error.response && error.response.status !== 401) {
+          console.error("Error fetching user type", error);
+        }
+      }
+    } catch (error) {
+      console.error("Unexpected error", error);
+    }
+  }, []);
+
+  const checkLoginStatus = useCallback(() => {
+    const token = Cookies.get("token");
+    setIsLoggedIn(!!token);
+    if (token) fetchUserType();
+    else {
+      setUserType(null);
+      localStorage.removeItem("userType");
+    }
+  }, [fetchUserType]);
+
+  useEffect(() => {
+    checkLoginStatus();
+
+    // Cleanup any side effects
+    return () => {
+      localStorage.removeItem("userType");
+    };
+  }, [checkLoginStatus]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,12 +90,11 @@ const Header = () => {
     };
   }, []);
 
-  // Calculate the line's width as a percentage of scroll
   const scrollableHeight =
     document.documentElement.scrollHeight - window.innerHeight;
   const scrollPercentage =
     scrollableHeight > 0 ? scrollPosition / scrollableHeight : 0;
-  const lineWidth = scrollPercentage * 100; // Convert to percentage for width
+  const lineWidth = scrollPercentage * 100;
 
   return (
     <>
@@ -56,6 +122,21 @@ const Header = () => {
             <Link to="/contact" className="text-gray-800 hover:text-blue-500">
               Contact
             </Link>
+            {isLoggedIn ? (
+              <>
+                {/* Profile icon for large screens */}
+                <Link
+                  to={userType === "user" ? "/profile/user" : "/profile/provider"}
+                  className="text-gray-800 hover:text-blue-500 ml-auto flex items-center"
+                >
+                  <FaUser size={24} className="rounded-full bg-gray-200 p-2" />
+                </Link>
+              </>
+            ) : (
+              <Link to="/login" className="text-gray-800 hover:text-blue-500">
+                Login
+              </Link>
+            )}
           </nav>
           <button
             onClick={toggleMenu}
@@ -64,7 +145,6 @@ const Header = () => {
             {isMenuOpen ? <HiX size={24} /> : <HiMenu size={24} />}
           </button>
         </div>
-        {/* Scroll line */}
         <div
           className="fixed top-[calc(100% - 1px)] left-0 h-1 bg-slate-500"
           style={{
@@ -100,6 +180,21 @@ const Header = () => {
             >
               Contact
             </Link>
+            {isLoggedIn ? (
+              <Link
+                to={userType === "user" ? "/profile/user" : "/profile/provider"}
+                className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
+              >
+                Profile
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </nav>
       )}

@@ -87,7 +87,7 @@ module.exports.loginProvider = async (req, res, next) => {
 };
 
 module.exports.updateProvider = async (req, res, next) => {
-  const serviceProviderId = req.params.id;
+  const serviceProviderId = req.user.id;
   const {
     email,
     password,
@@ -130,7 +130,7 @@ module.exports.updateProvider = async (req, res, next) => {
 };
 
 module.exports.deleteProvider = async (req, res, next) => {
-  const serviceProviderId = req.params.id;
+  const serviceProviderId = req.user.id;
 
   try {
     const deletedServiceProvider = await prisma.serviceProvider.delete({
@@ -185,5 +185,27 @@ module.exports.getServiceProviders = async (req, res, next) => {
       message: "Unable to find service providers",
       error: err.message,
     });
+  }
+};
+
+module.exports.findServiceProvider = async (req, res, next) => {
+  try {
+    console.log("enter 2");
+    const userId = req.user.id; // Assuming you are using some middleware to authenticate the user
+    const user = await prisma.serviceProvider.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    console.log(user);
+
+    if (user) {
+      res.status(200).json({ found: true,user }); 
+    } else {
+      res.status(404).json({ found: false });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
   }
 };

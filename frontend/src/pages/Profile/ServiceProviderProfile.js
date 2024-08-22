@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const ServiceProviderProfile = ({ serviceProviderId }) => {
   const [profileData, setProfileData] = useState({});
@@ -12,7 +13,12 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
     const fetchProfileData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3300/api/v1/serviceprovider/profile/${serviceProviderId}`
+          `http://localhost:3300/api/v1/serviceprovider/find`,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get("token")}`,
+            },
+          }
         );
         setProfileData(response.data);
       } catch (error) {
@@ -30,9 +36,14 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(
-        `http://localhost:3300/api/v1/serviceprovider/profile/${serviceProviderId}`,
-        profileData
+      await axios.post(
+        `http://localhost:3300/api/v1/serviceprovider/update`,
+        profileData,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
       );
       setEditMode(false);
       alert("Profile updated successfully!");
@@ -44,7 +55,12 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
   const handleDelete = async () => {
     try {
       await axios.delete(
-        `http://localhost:3300/api/v1/serviceprovider/profile/${serviceProviderId}`
+        `http://localhost:3300/api/v1/serviceprovider/delete}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
       );
       alert("Account deleted successfully!");
       navigate("/"); // Redirect to home after deletion

@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Cookies = require("cookies");
 
 module.exports.createUser = async (req, res, next) => {
   console.log(req.body);
@@ -10,11 +11,8 @@ module.exports.createUser = async (req, res, next) => {
   try {
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email: email },
-          { mobilenumber: mobilenumber }
-        ]
-      }
+        OR: [{ email: email }, { mobilenumber: mobilenumber }],
+      },
     });
 
     if (existingUser) {
@@ -22,7 +20,9 @@ module.exports.createUser = async (req, res, next) => {
         return res.status(409).json({ message: "Email already exists" });
       }
       if (existingUser.mobilenumber === mobilenumber) {
-        return res.status(409).json({ message: "Mobile number already exists" });
+        return res
+          .status(409)
+          .json({ message: "Mobile number already exists" });
       }
     }
 
@@ -51,7 +51,6 @@ module.exports.createUser = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 module.exports.loginUser = async (req, res, next) => {
   console.log(req.body);
@@ -89,7 +88,8 @@ module.exports.loginUser = async (req, res, next) => {
 };
 
 module.exports.updateUser = async (req, res, next) => {
-  const { id } = req.params;
+  console.log("entered update");
+  const id = req.user.id;
   const { email, password, name, mobilenumber, address } = req.body;
 
   try {
@@ -127,12 +127,24 @@ module.exports.updateUser = async (req, res, next) => {
 };
 
 module.exports.deleteUser = async (req, res, next) => {
-  const userId = req.params.id;
+  const userId = req.user.id;
+  console.log("entered delete");
 
   try {
+    // Delete related ratings
+    await prisma.rating.deleteMany({
+      where: { userId: userId },
+    });
+
+    // Now delete the user
     const user = await prisma.user.delete({
       where: { id: userId },
     });
+
+    // Clear the cookie
+    const cookies = new Cookies(req, res);
+    cookies.set("token", "", { expires: new Date(0) }); // Expire immediately
+
     res.status(200).json({
       message: "User deleted successfully",
       user: user,
@@ -140,5 +152,29 @@ module.exports.deleteUser = async (req, res, next) => {
   } catch (error) {
     console.error("Error deleting user:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+module.exports.findUser = async (req, res, next) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(400).json({ error: "Invalid user data" });
+    }
+
+    const userId = req.user.id;
+    const user = await prisma.user.findFirst({
+      where: { id: userId },
+    });
+
+    console.log("User data:", user);
+
+    if (user) {
+      res.status(200).json({ found: true, user });
+    } else {
+      res.status(404).json({ found: false });
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error); // Add debugging line
+    res.status(500).json({ error: "Server error" });
   }
 };
