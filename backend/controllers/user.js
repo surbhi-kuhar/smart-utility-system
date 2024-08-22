@@ -77,7 +77,8 @@ module.exports.loginUser = async (req, res, next) => {
         });
       }
     } else {
-      res.status(404).json({
+      res.status(200).json({
+        found : false,
         message: "Authentication failed",
       });
     }
@@ -125,6 +126,7 @@ module.exports.updateUser = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 module.exports.deleteUser = async (req, res, next) => {
   const userId = req.user.id;

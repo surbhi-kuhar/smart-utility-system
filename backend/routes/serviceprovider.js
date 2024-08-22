@@ -11,7 +11,7 @@ const { authenticateToken } = require("../middleware");
 const router = express.Router();
 
 router.post("/create", createProvider);
-router.get("/login", loginProvider);
+router.post("/login", loginProvider);
 router.post("/update", authenticateToken, updateProvider);
 router.delete("/delete", authenticateToken, deleteProvider);
 router.get("/service/:service", getServiceProviders);

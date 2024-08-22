@@ -30,12 +30,32 @@ const Header = () => {
 
       // Try fetching user data
       try {
-        await axios.get("http://localhost:3300/api/v1/user/find", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUserType("user");
-        localStorage.setItem("userType", "user");
-        return;
+        const { data } = await axios.get(
+          "http://localhost:3300/api/v1/user/find",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (data.found === "true") {
+          setUserType("user");
+          localStorage.setItem("userType", "user");
+          return;
+        } else {
+          try {
+            const { data } = await axios.get(
+              "http://localhost:3300/api/v1/serviceprovider/find",
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            if (data.found === "true") setUserType("serviceprovider");
+            localStorage.setItem("userType", "serviceprovider");
+          } catch (error) {
+            if (error.response && error.response.status !== 401) {
+              console.error("Error fetching user type", error);
+            }
+          }
+        }
       } catch (error) {
         if (error.response && error.response.status !== 401) {
           console.error("Error fetching user type", error);
@@ -43,17 +63,6 @@ const Header = () => {
       }
 
       // Try fetching provider data
-      try {
-        await axios.get("http://localhost:3300/api/v1/serviceprovider/find", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUserType("serviceprovider");
-        localStorage.setItem("userType", "serviceprovider");
-      } catch (error) {
-        if (error.response && error.response.status !== 401) {
-          console.error("Error fetching user type", error);
-        }
-      }
     } catch (error) {
       console.error("Unexpected error", error);
     }
@@ -126,7 +135,9 @@ const Header = () => {
               <>
                 {/* Profile icon for large screens */}
                 <Link
-                  to={userType === "user" ? "/profile/user" : "/profile/provider"}
+                  to={
+                    userType === "user" ? "/profile/user" : "/profile/provider"
+                  }
                   className="text-gray-800 hover:text-blue-500 ml-auto flex items-center"
                 >
                   <FaUser size={24} className="rounded-full bg-gray-200 p-2" />

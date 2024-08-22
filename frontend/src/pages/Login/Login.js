@@ -13,18 +13,37 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:3300/api/v1/user/login", {
-        mobilenumber: mobile,
-        password: password,
-      });
+      const response1 = await axios.post(
+        "http://localhost:3300/api/v1/user/login",
+        {
+          mobilenumber: mobile,
+          password: password,
+        }
+      );
 
-      console.log("response is ", response);
+      if (!response1.data.found) {
+        const response2 = await axios.post(
+          "http://localhost:3300/api/v1/serviceprovider/login",
+          {
+            mobilenumber: mobile,
+            password: password,
+          }
+        );
+        console.log(response2);
 
-      // Store the JWT token in a cookie
-      Cookies.set("token", response.data.token, { expires: 10 }); // 10 days expiry
+        Cookies.set("token", response2.data.token, { expires: 10 }); // 10 days expiry
 
-      // Redirect to the desired page after successful login
-      navigate("/");
+        // Redirect to the desired page after successful login
+        navigate("/");
+      } else {
+        console.log("response is ", response1);
+
+        // Store the JWT token in a cookie
+        Cookies.set("token", response1.data.token, { expires: 10 }); // 10 days expiry
+
+        // Redirect to the desired page after successful login
+        navigate("/");
+      }
     } catch (err) {
       setError("Login failed. Please check your credentials.");
     }

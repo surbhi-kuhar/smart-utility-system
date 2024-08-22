@@ -20,7 +20,9 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
             },
           }
         );
-        setProfileData(response.data);
+
+        console.log(response.data);
+        setProfileData(response.data.user);
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
@@ -55,7 +57,7 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
   const handleDelete = async () => {
     try {
       await axios.delete(
-        `http://localhost:3300/api/v1/serviceprovider/delete}`,
+        `http://localhost:3300/api/v1/serviceprovider/delete`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("token")}`,
@@ -71,7 +73,6 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      {/* Spacer for the gap above the profile card */}
       <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-lg mt-12">
         <h2 className="text-3xl font-semibold text-gray-800 mb-6">
           Service Provider Profile
