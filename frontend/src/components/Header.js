@@ -24,7 +24,6 @@ const Header = () => {
   }, [checkLoginStatus]);
 
   useEffect(() => {
-
     const handleScroll = () => {
       setScrollPosition(window.scrollY);
     };
@@ -69,12 +68,20 @@ const Header = () => {
               Contact
             </Link>
             {isLoggedIn ? (
-              <Link
-                to="/profile/user"
-                className="text-gray-800 hover:text-blue-500 ml-auto flex items-center"
-              >
-                <FaUser size={24} className="rounded-full bg-gray-200 p-2" />
-              </Link>
+              <>
+                <Link
+                  to="/bookings"
+                  className="text-gray-800 hover:text-blue-500"
+                >
+                  Bookings
+                </Link>
+                <Link
+                  to="/profile/user"
+                  className="text-gray-800 hover:text-blue-500 ml-auto flex items-center"
+                >
+                  <FaUser size={24} className="rounded-full bg-gray-200 p-2" />
+                </Link>
+              </>
             ) : (
               <Link to="/login" className="text-gray-800 hover:text-blue-500">
                 Login
@@ -124,12 +131,20 @@ const Header = () => {
               Contact
             </Link>
             {isLoggedIn ? (
-              <Link
-                to="/profile/user"
-                className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
-              >
-                Profile
-              </Link>
+              <>
+                <Link
+                  to="/bookings"
+                  className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
+                >
+                  Bookings
+                </Link>
+                <Link
+                  to="/profile/user"
+                  className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
+                >
+                  Profile
+                </Link>
+              </>
             ) : (
               <Link
                 to="/login"

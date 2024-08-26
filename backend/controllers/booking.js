@@ -12,7 +12,7 @@ module.exports.bookService = async (req, res, next) => {
       where: {
         userId: userId,
         serviceProviderId: serviceProviderId,
-        bookingDate: bookingDate, // Use Date object here
+        bookingDate: bookingDate, // Ensure bookingDate is in correct format
       },
     });
 
@@ -25,7 +25,7 @@ module.exports.bookService = async (req, res, next) => {
     const bookingsOnDate = await prisma.booking.count({
       where: {
         serviceProviderId: serviceProviderId,
-        bookingDate: bookingDate, // Use Date object here
+        bookingDate: bookingDate, // Ensure bookingDate is in correct format
       },
     });
 
@@ -37,12 +37,13 @@ module.exports.bookService = async (req, res, next) => {
       });
     }
 
-    // Create the new booking
+    // Create the new booking with status set to PENDING by default
     const newBooking = await prisma.booking.create({
       data: {
         userId: userId,
         serviceProviderId: serviceProviderId,
-        bookingDate: bookingDate, // Use Date object here
+        bookingDate: bookingDate, // Ensure bookingDate is in correct format
+
       },
     });
 
@@ -57,7 +58,7 @@ module.exports.bookService = async (req, res, next) => {
 };
 
 module.exports.getAllBookings = async (req, res, next) => {
-  const { userId } = req.body;
+  const userId = req.user.id;
 
   try {
     const bookings = await prisma.booking.findMany({

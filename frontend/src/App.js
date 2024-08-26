@@ -7,6 +7,7 @@ import Providers from "./pages/Providers/Providers";
 import UserProfile from "./pages/Profile/UserProfile";
 import ServiceProviderProfile from "./pages/Profile/ServiceProviderProfile";
 import BookingPage from "./pages/Booking/Booking";
+import FetchBookings from "./pages/Booking/FetchBookings";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             element={<ServiceProviderProfile />}
           />
           <Route path="/booking" element={<BookingPage />}></Route>
+          <Route path="/bookings" element={<FetchBookings />}></Route>
         </Routes>
       </BrowserRouter>
     </>
