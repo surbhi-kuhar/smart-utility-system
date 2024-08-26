@@ -4,12 +4,17 @@ import { motion } from "framer-motion";
 import { FaUserCircle } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { Bars } from "react-loader-spinner"; // You can choose any other loader component
+import BookingModal from "../Booking/Booking"; // Adjust the path as needed
 
 function Providers() {
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { service } = useParams(); // Get the service from URL parameters
+  const [selectedProviderId, setSelectedProviderId] = useState(null);
+
+  const openModal = (providerId) => setSelectedProviderId(providerId);
+  const closeModal = () => setSelectedProviderId(null);
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -47,9 +52,7 @@ function Providers() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-12">
-       
-      </h1>
+      <h1 className="text-3xl font-bold text-center mb-12"></h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {providers.map((provider) => (
           <motion.div
@@ -97,12 +100,19 @@ function Providers() {
                   : "bg-gray-400 cursor-not-allowed"
               }`}
               disabled={provider.availabilitystatus !== "available"}
+              onClick={() => openModal(provider.id)}
             >
               Book Now
             </button>
           </motion.div>
         ))}
       </div>
+      {selectedProviderId && (
+        <BookingModal
+          serviceProviderId={selectedProviderId}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }

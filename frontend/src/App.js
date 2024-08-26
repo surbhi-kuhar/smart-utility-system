@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import Providers from "./pages/Providers/Providers";
 import UserProfile from "./pages/Profile/UserProfile";
 import ServiceProviderProfile from "./pages/Profile/ServiceProviderProfile";
+import BookingPage from "./pages/Booking/Booking";
 
 function App() {
   return (
@@ -18,7 +19,11 @@ function App() {
           <Route path="/signup" element={<Signup />}></Route>
           <Route path="/providers/:service" element={<Providers />} />
           <Route path="/profile/user" element={<UserProfile />} />
-          <Route path="/profile/provider" element={<ServiceProviderProfile />} />
+          <Route
+            path="/profile/provider"
+            element={<ServiceProviderProfile />}
+          />
+          <Route path="/booking" element={<BookingPage />}></Route>
         </Routes>
       </BrowserRouter>
     </>

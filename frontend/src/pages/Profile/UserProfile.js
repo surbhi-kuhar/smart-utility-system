@@ -79,10 +79,12 @@ const UserProfile = ({ userId }) => {
         }
       );
 
-      console.log(data);
+      // Clear the token from cookies
+      Cookies.remove("token");
 
       alert("Account deleted successfully!");
       navigate("/"); // Redirect to home after deletion
+      window.location.reload(); // Reload the page to update the header
     } catch (error) {
       console.error("Error deleting account:", error);
     }

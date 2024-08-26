@@ -2,7 +2,10 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 module.exports.bookService = async (req, res, next) => {
-  const { userId, serviceProviderId, bookingDate } = req.body;
+  console.log("entered booking controller");
+  const { serviceProviderId, bookingDate } = req.body;
+  const userId = req.user.id;
+  console.log(userId);
 
   try {
     const existingBooking = await prisma.booking.findFirst({
