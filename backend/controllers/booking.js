@@ -43,9 +43,11 @@ module.exports.bookService = async (req, res, next) => {
         userId: userId,
         serviceProviderId: serviceProviderId,
         bookingDate: bookingDate, // Ensure bookingDate is in correct format
-
+        bookingStatus: "PENDING",
       },
     });
+
+    console.log(newBooking);
 
     res.status(201).json({
       booking: newBooking,
