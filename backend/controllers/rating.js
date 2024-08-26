@@ -1,6 +1,37 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+module.exports.getRating = async (req, res, next) => {
+  console.log("inside get rating")
+  const { serviceProviderId } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const prevRating = await prisma.rating.findFirst({
+      where: {
+        userId: userId,
+        serviceProviderId: serviceProviderId,
+      },
+    });
+
+    if (prevRating) {
+      res.status(200).json({
+        prevRating: prevRating,
+      });
+    } else {
+      res.status(404).json({
+        message: "No previous rating found.",
+      });
+    }
+  } catch (err) {
+    console.error("Error fetching rating:", err);
+    res.status(500).json({
+      message: "An error occurred while fetching the rating.",
+    });
+  }
+};
+
+
 module.exports.rate = async (req, res, next) => {
   try {
     const { serviceProviderId, rating, review } = req.body;
@@ -54,11 +85,9 @@ module.exports.updateRating = async (req, res, next) => {
     });
 
     if (!existingRating || existingRating.userId !== userId) {
-      return res
-        .status(404)
-        .json({
-          error: "Rating not found or you are not authorized to update it.",
-        });
+      return res.status(404).json({
+        error: "Rating not found or you are not authorized to update it.",
+      });
     }
 
     // Update the rating
