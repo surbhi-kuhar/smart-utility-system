@@ -78,7 +78,7 @@ module.exports.loginUser = async (req, res, next) => {
       }
     } else {
       res.status(200).json({
-        found : false,
+        found: false,
         message: "Authentication failed",
       });
     }
@@ -127,7 +127,6 @@ module.exports.updateUser = async (req, res, next) => {
   }
 };
 
-
 module.exports.deleteUser = async (req, res, next) => {
   const userId = req.user.id;
   console.log("entered delete");
@@ -135,6 +134,10 @@ module.exports.deleteUser = async (req, res, next) => {
   try {
     // Delete related ratings
     await prisma.rating.deleteMany({
+      where: { userId: userId },
+    });
+
+    await prisma.booking.deleteMany({
       where: { userId: userId },
     });
 

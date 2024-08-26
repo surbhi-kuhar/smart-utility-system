@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Use `useNavigate` instead of `useHistory`
 import Cookies from "js-cookie";
 import logo from "../images/logo.png";
 import { FaUser } from "react-icons/fa"; // Import an icon for the Profile button
@@ -9,6 +9,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate(); // Replace `useHistory` with `useNavigate`
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -18,6 +19,30 @@ const Header = () => {
     const token = Cookies.get("token");
     setIsLoggedIn(!!token);
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      // Call the API to log out
+      // await fetch("/api/logout", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ token: Cookies.get("token") }),
+      // });
+
+      // Remove the token from cookies
+      Cookies.remove("token");
+
+      // Update the login status
+      setIsLoggedIn(false);
+
+      // Redirect to the homepage or login page
+      navigate("/login"); // Use `navigate` to redirect
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   useEffect(() => {
     checkLoginStatus();
@@ -81,11 +106,25 @@ const Header = () => {
                 >
                   <FaUser size={24} className="rounded-full bg-gray-200 p-2" />
                 </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-800 hover:text-blue-500 ml-4"
+                >
+                  Logout
+                </button>
               </>
             ) : (
-              <Link to="/login" className="text-gray-800 hover:text-blue-500">
-                Login
-              </Link>
+              <>
+                <Link to="/login" className="text-gray-800 hover:text-blue-500">
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-gray-800 hover:text-blue-500 ml-4"
+                >
+                  Signup
+                </Link>
+              </>
             )}
           </nav>
           <button
@@ -144,14 +183,28 @@ const Header = () => {
                 >
                   Profile
                 </Link>
+                <Link
+                  onClick={handleLogout}
+                  className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
+                >
+                  Logout
+                </Link>
               </>
             ) : (
-              <Link
-                to="/login"
-                className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
-              >
-                Login
-              </Link>
+              <>
+                <Link
+                  to="/login"
+                  className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
+                >
+                  Signup
+                </Link>
+              </>
             )}
           </div>
         </nav>
