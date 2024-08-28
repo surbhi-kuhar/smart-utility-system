@@ -116,3 +116,30 @@ module.exports.cancelService = async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+module.exports.getProviderBookings = async (req, res, next) => {
+  try {
+    const providerId = req.user.id; // Get provider ID from the request (ensure you have middleware for authentication)
+
+    // Fetch bookings where the serviceProviderId matches the provider's ID
+    const bookings = await prisma.booking.findMany({
+      where: { serviceProviderId: providerId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            mobilenumber: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" }, // Order by date of creation
+    });
+
+    res.json(bookings);
+  } catch (error) {
+    console.error("Error fetching provider bookings:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching bookings" });
+  }
+};
