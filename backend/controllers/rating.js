@@ -19,7 +19,7 @@ module.exports.getRating = async (req, res, next) => {
         prevRating: prevRating,
       });
     } else {
-      res.status(404).json({
+      res.status(200).json({
         message: "No previous rating found.",
       });
     }

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React,{useState} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie"; // Import the js-cookie library
 
-function Login() {
+function LoginProvider() {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,7 +15,7 @@ function Login() {
     try {
       console.log("response1");
       const response1 = await axios.post(
-        "http://localhost:3300/api/v1/user/login",
+        "http://localhost:3300/api/v1/serviceprovider/login",
         {
           mobilenumber: mobile,
           password: password,
@@ -30,7 +30,7 @@ function Login() {
       Cookies.set("token", response1.data.token, { expires: 10 }); // 10 days expiry
 
       // Redirect to the desired page after successful login
-      navigate("/");
+      navigate("/provider-bookings");
     } catch (err) {
       setError("Login failed. Please check your credentials.");
     }
@@ -112,10 +112,10 @@ function Login() {
           <p className="mt-2 text-sm text-gray-600">
             Login as a{" "}
             <Link
-              to="/provider-login"
+              to="/login"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Service Provider?
+              Customer?
             </Link>
           </p>
         </div>
@@ -124,4 +124,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginProvider;

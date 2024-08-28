@@ -24,27 +24,29 @@ function FetchBookings() {
         );
         setBookings(response.data.bookings);
 
-        // Fetch existing ratings for each booking
+        // Fetch existing ratings for completed bookings
         for (const booking of response.data.bookings) {
-          try {
-            const ratingResponse = await axios.get(
-              "http://localhost:3300/api/v1/rating/getrating",
-              {
-                params: { serviceProviderId: booking.serviceProvider.id },
-                headers: {
-                  Authorization: `Bearer ${Cookies.get("token")}`,
-                },
-              }
-            );
+          if (booking.bookingStatus === "COMPLETED") {
+            try {
+              const ratingResponse = await axios.get(
+                "http://localhost:3300/api/v1/rating/getrating",
+                {
+                  serviceProviderId: booking.serviceProvider.id,
+                  headers: {
+                    Authorization: `Bearer ${Cookies.get("token")}`,
+                  },
+                }
+              );
 
-            if (ratingResponse.data.prevRating) {
-              setExistingRating((prev) => ({
-                ...prev,
-                [booking.id]: ratingResponse.data.prevRating,
-              }));
+              if (ratingResponse.data.prevRating) {
+                setExistingRating((prev) => ({
+                  ...prev,
+                  [booking.id]: ratingResponse.data.prevRating,
+                }));
+              }
+            } catch (ratingError) {
+              console.error("Error fetching rating:", ratingError);
             }
-          } catch (ratingError) {
-            console.error("Error fetching rating:", ratingError);
           }
         }
       } catch (err) {
@@ -83,7 +85,7 @@ function FetchBookings() {
         const ratingResponse = await axios.get(
           "http://localhost:3300/api/v1/rating/getrating",
           {
-            params: { serviceProviderId: booking.serviceProvider.id },
+            serviceProviderId: booking.serviceProvider.id,
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
             },
@@ -116,7 +118,7 @@ function FetchBookings() {
         const ratingResponse = await axios.get(
           "http://localhost:3300/api/v1/rating/getrating",
           {
-            params: { serviceProviderId: booking.serviceProvider.id },
+            serviceProviderId: booking.serviceProvider.id,
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
             },

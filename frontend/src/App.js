@@ -8,6 +8,7 @@ import UserProfile from "./pages/Profile/UserProfile";
 import ServiceProviderProfile from "./pages/Profile/ServiceProviderProfile";
 import BookingPage from "./pages/Booking/Booking";
 import FetchBookings from "./pages/Booking/FetchBookings";
+import LoginProvider from "./pages/Login/LoginProvider";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/login" element={<Login />}></Route>
+          <Route path="/provider-login" element={<LoginProvider />}></Route>
           <Route path="/signup" element={<Signup />}></Route>
           <Route path="/providers/:service" element={<Providers />} />
           <Route path="/profile/user" element={<UserProfile />} />
