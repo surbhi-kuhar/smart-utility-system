@@ -22,6 +22,8 @@ function FetchBookings() {
             },
           }
         );
+
+        console.log(response.data.bookings);
         setBookings(response.data.bookings);
 
         // Fetch existing ratings for completed bookings

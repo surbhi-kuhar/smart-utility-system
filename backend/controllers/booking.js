@@ -61,13 +61,17 @@ module.exports.bookService = async (req, res, next) => {
 
 module.exports.getAllBookings = async (req, res, next) => {
   const userId = req.user.id;
+  console.log(userId);
 
   try {
     const bookings = await prisma.booking.findMany({
       where: { userId: userId },
-      include: { serviceProvider: true },
+      include: {
+        serviceProvider: true, // Include serviceProvider even if it's null
+      },
     });
 
+    console.log(bookings);
     res.status(200).json({
       bookings: bookings,
     });

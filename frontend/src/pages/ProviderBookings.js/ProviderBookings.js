@@ -66,30 +66,31 @@ function ProviderBookings() {
     <>
       <ProviderHeader />
       <div className="min-h-screen bg-gray-100 p-4">
-        {/* Add margin-top here to create space between the header and the content */}
-        <div className="bg-white shadow-lg rounded-lg p-8 max-w-4xl mx-auto mt-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className="bg-white shadow-lg rounded-lg p-6 sm:p-8 md:p-10 max-w-4xl mx-auto mt-12">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-6">
             Your Bookings
           </h2>
           {error && <div className="text-red-500 text-sm mt-4">{error}</div>}
-          <div className="mt-6">
+          <div className="mt-6 overflow-x-auto">
             {bookings.length === 0 ? (
               <p>No bookings available.</p>
             ) : (
               <table className="w-full border-collapse border border-gray-200">
                 <thead>
                   <tr>
-                    <th className="border border-gray-300 px-4 py-2">
+                    <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
                       Customer Name
                     </th>
-                    <th className="border border-gray-300 px-4 py-2">
+                    <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
                       Mobile Number
                     </th>
-                    <th className="border border-gray-300 px-4 py-2">
+                    <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
                       Booking Date
                     </th>
-                    <th className="border border-gray-300 px-4 py-2">Status</th>
-                    <th className="border border-gray-300 px-4 py-2">
+                    <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
+                      Status
+                    </th>
+                    <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
                       Actions
                     </th>
                   </tr>
@@ -97,21 +98,21 @@ function ProviderBookings() {
                 <tbody>
                   {bookings.map((booking) => (
                     <tr key={booking.id}>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {booking.user.name}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {booking.user.mobilenumber}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {booking.bookingDate}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {editStatus === booking.id ? (
                           <select
                             value={selectedStatus}
                             onChange={handleStatusChange}
-                            className="border rounded-md px-2 py-1"
+                            className="border rounded-md px-2 py-1 text-sm"
                           >
                             <option value="PENDING">Pending</option>
                             <option value="COMPLETED">Completed</option>
@@ -120,11 +121,11 @@ function ProviderBookings() {
                           booking.bookingStatus
                         )}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {editStatus === booking.id ? (
                           <button
                             onClick={() => handleUpdateStatus(booking.id)}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm"
                           >
                             Update
                           </button>
@@ -136,7 +137,7 @@ function ProviderBookings() {
                                 booking.bookingStatus
                               )
                             }
-                            className="bg-yellow-500 text-white px-4 py-2 rounded-md"
+                            className="bg-yellow-500 text-white px-4 py-2 rounded-md text-sm"
                           >
                             Update Status
                           </button>
