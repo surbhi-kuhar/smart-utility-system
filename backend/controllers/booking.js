@@ -143,3 +143,20 @@ module.exports.getProviderBookings = async (req, res, next) => {
       .json({ error: "An error occurred while fetching bookings" });
   }
 };
+
+module.exports.updateBookingStatus = async (req, res) => {
+  const { bookingId } = req.body;
+  const { bookingStatus } = req.body;
+
+  try {
+    // Update the booking status in the database
+    const updatedBooking = await prisma.booking.update({
+      where: { id: bookingId },
+      data: { bookingStatus },
+    });
+
+    res.status(200).json(updatedBooking);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update booking status" });
+  }
+};
