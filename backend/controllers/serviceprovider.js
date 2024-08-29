@@ -53,16 +53,23 @@ module.exports.loginProvider = async (req, res, next) => {
   console.log(req.body);
   const { mobilenumber, password } = req.body;
 
+  // const pass = await bcrypt.hash("1234567",10);
+  // console.log(pass);
+
   try {
     const serviceProvider = await prisma.serviceProvider.findFirst({
       where: { mobilenumber: mobilenumber },
     });
+
+    console.log("service provider ", serviceProvider);
 
     if (serviceProvider) {
       const isPasswordValid = await bcrypt.compare(
         password,
         serviceProvider.password
       );
+
+      console.log("valid password ", isPasswordValid);
       if (isPasswordValid) {
         const token = jwt.sign(
           { id: serviceProvider.id },
@@ -76,10 +83,8 @@ module.exports.loginProvider = async (req, res, next) => {
           serviceProvider: serviceProvider,
           message: "Login successful",
         });
-      }
+      } else res.status(401).json({ message: "Authentication failed" });
     }
-
-    res.status(401).json({ message: "Authentication failed" });
   } catch (error) {
     console.error("Error logging in service provider:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -201,7 +206,7 @@ module.exports.findServiceProvider = async (req, res, next) => {
     console.log(user);
 
     if (user) {
-      res.status(200).json({ found: true,user }); 
+      res.status(200).json({ found: true, user });
     } else {
       res.status(404).json({ found: false });
     }

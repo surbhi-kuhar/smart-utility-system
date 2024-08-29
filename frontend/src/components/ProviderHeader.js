@@ -24,16 +24,19 @@ const ProviderHeader = () => {
     try {
       // Remove the token from cookies
       Cookies.remove("token");
-
+  
       // Update the login status
       setIsLoggedIn(false);
-
-      // Redirect to the login page
-      navigate("/login");
+  
+      // Delay navigation to ensure the state update is processed
+      setTimeout(() => {
+        navigate("/provider-login");
+      }, 0);
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
+  
 
   useEffect(() => {
     checkLoginStatus();
@@ -74,26 +77,26 @@ const ProviderHeader = () => {
             {isLoggedIn ? (
               <>
                 <Link
-                  to="/service-provider/bookings"
+                  to="/provider-bookings"
                   className="text-gray-800 hover:text-blue-500"
                 >
                   Bookings
                 </Link>
                 <Link
-                  to="/profile/service-provider"
+                  to="/profile/provider"
                   className="text-gray-800 hover:text-blue-500 ml-auto flex items-center"
                 >
                   <FaUser size={24} className="rounded-full bg-gray-200 p-2" />
                 </Link>
-                <button
+                <Link
                   onClick={handleLogout}
                   className="text-gray-800 hover:text-blue-500 ml-4"
                 >
                   Logout
-                </button>
+                </Link>
               </>
             ) : (
-              <Link to="/login" className="text-gray-800 hover:text-blue-500">
+              <Link to="/provider-login" className="text-gray-800 hover:text-blue-500">
                 Login
               </Link>
             )}
@@ -119,27 +122,27 @@ const ProviderHeader = () => {
             {isLoggedIn ? (
               <>
                 <Link
-                  to="/service-provider/bookings"
+                  to="/provider-bookings"
                   className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
                 >
                   Bookings
                 </Link>
                 <Link
-                  to="/profile/service-provider"
+                  to="/profile/provider"
                   className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
                 >
                   Profile
                 </Link>
-                <button
+                <Link
                   onClick={handleLogout}
                   className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
                 >
                   Logout
-                </button>
+                </Link>
               </>
             ) : (
               <Link
-                to="/login"
+                to="/provider-login"
                 className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
               >
                 Login

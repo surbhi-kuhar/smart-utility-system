@@ -30,7 +30,7 @@ function ProviderBookings() {
 
   const handleUpdateClick = (bookingId, currentStatus) => {
     setEditStatus(bookingId);
-    setSelectedStatus(currentStatus); // Initialize with the current status
+    setSelectedStatus(currentStatus);
   };
 
   const handleStatusChange = (e) => {
@@ -48,7 +48,6 @@ function ProviderBookings() {
         }
       );
 
-      // Update the local state to reflect the change
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
           booking.id === bookingId
@@ -57,7 +56,6 @@ function ProviderBookings() {
         )
       );
 
-      // Reset the edit status after updating
       setEditStatus(null);
     } catch (err) {
       setError("Failed to update booking status.");
@@ -68,8 +66,11 @@ function ProviderBookings() {
     <>
       <ProviderHeader />
       <div className="min-h-screen bg-gray-100 p-4">
-        <div className="bg-white shadow-lg rounded-lg p-8 max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-800">Your Bookings</h2>
+        {/* Add margin-top here to create space between the header and the content */}
+        <div className="bg-white shadow-lg rounded-lg p-8 max-w-4xl mx-auto mt-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Your Bookings
+          </h2>
           {error && <div className="text-red-500 text-sm mt-4">{error}</div>}
           <div className="mt-6">
             {bookings.length === 0 ? (
