@@ -130,7 +130,7 @@ const Home = () => {
         </section>
 
         {/* Call to Action Section */}
-        <section className="flex flex-col items-center justify-center text-center py-16 bg-gradient-to-r from-blue-500 to-purple-500">
+        {/* <section className="flex flex-col items-center justify-center text-center py-16 bg-gradient-to-r from-blue-500 to-purple-500">
           <motion.h2
             className="text-3xl md:text-4xl font-bold mb-4"
             initial={{ opacity: 0 }}
@@ -155,7 +155,7 @@ const Home = () => {
           >
             Sign Up Now
           </motion.button>
-        </section>
+        </section> */}
       </div>
     </>
   );

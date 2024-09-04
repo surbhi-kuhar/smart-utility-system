@@ -59,6 +59,28 @@ function FetchBookings() {
     fetchBookings();
   }, []);
 
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      await axios.delete(
+        `http://localhost:3300/api/v1/booking/cancel/${bookingId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
+
+      alert("Booking canceled successfully!");
+
+      // Remove the canceled booking from the state
+      setBookings((prevBookings) =>
+        prevBookings.filter((booking) => booking.id !== bookingId)
+      );
+    } catch (err) {
+      setError(err.response?.data?.message || "Error canceling booking");
+    }
+  };
+
   const handleRatingSubmit = async (booking) => {
     if (!rating.value) {
       setRatingError("Please select a rating.");
@@ -182,6 +204,14 @@ function FetchBookings() {
                 <p className="text-lg">
                   <strong>Booking Status:</strong> {booking.bookingStatus}
                 </p>
+                {booking.bookingStatus === "PENDING" && (
+                  <button
+                    onClick={() => handleCancelBooking(booking.id)}
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg mt-4"
+                  >
+                    Cancel Booking
+                  </button>
+                )}
                 {booking.bookingStatus === "COMPLETED" && (
                   <div className="mt-4">
                     {editMode[booking.id] ? (
