@@ -8,6 +8,16 @@ module.exports.bookService = async (req, res, next) => {
   console.log(userId);
 
   try {
+    // Retrieve the user's address from the User model
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { address: true }, // Assuming the User model has an address field
+    });
+
+    if (!user || !user.address) {
+      return res.status(400).json({ message: "User address not found." });
+    }
+
     const existingBooking = await prisma.booking.findFirst({
       where: {
         userId: userId,
@@ -37,13 +47,14 @@ module.exports.bookService = async (req, res, next) => {
       });
     }
 
-    // Create the new booking with status set to PENDING by default
+    // Create the new booking with the user's address
     const newBooking = await prisma.booking.create({
       data: {
         userId: userId,
         serviceProviderId: serviceProviderId,
         bookingDate: bookingDate, // Ensure bookingDate is in correct format
         bookingStatus: "PENDING",
+        address: user.address, // Include the user's address in the booking
       },
     });
 

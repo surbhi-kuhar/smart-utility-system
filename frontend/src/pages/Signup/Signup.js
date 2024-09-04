@@ -204,6 +204,13 @@ const CustomerSignupForm = () => {
 const ServiceProviderSignupForm = () => {
   const navigate = useNavigate();
 
+  const setCookie = (name, value, days) => {
+    const d = new Date();
+    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = name + "=" + (value || "") + ";" + expires + ";path=/";
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -227,7 +234,8 @@ const ServiceProviderSignupForm = () => {
       if (response.status === 201) {
         console.log("Signup successful", response.data);
         // Handle success (e.g., redirect to login or show a success message)
-        navigate("/");
+        setCookie("token", response.data.token, 10);
+        navigate("/provider-bookings");
       } else {
         // Handle non-201 responses
         throw new Error("Signup failed");

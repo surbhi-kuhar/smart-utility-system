@@ -31,7 +31,7 @@ const Home = () => {
   });
 
   const images = [
-    { src: image1, text: "AC Service", textPosition: "bottom" },
+    { src: image1, text: "HVAC Services", textPosition: "bottom" },
     { src: image2, text: "Painting", textPosition: "top" },
     { src: image3, text: "Electrical", textPosition: "bottom" },
     { src: image4, text: "Carpentry", textPosition: "top" },
@@ -75,6 +75,7 @@ const Home = () => {
                     src={img.src}
                     alt={`Image ${index + 1}`}
                     className="w-full h-full object-cover"
+                    onClick={() => handleServiceRequest(img.text)}
                   />
                   <div
                     className={`absolute w-full text-center text-white font-bold text-3xl p-4 ${

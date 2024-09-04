@@ -85,6 +85,9 @@ function ProviderBookings() {
                       Mobile Number
                     </th>
                     <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
+                      Address
+                    </th>
+                    <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
                       Booking Date
                     </th>
                     <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
@@ -103,6 +106,9 @@ function ProviderBookings() {
                       </td>
                       <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {booking.user.mobilenumber}
+                      </td>
+                      <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
+                        {booking.user.address}
                       </td>
                       <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {booking.bookingDate}

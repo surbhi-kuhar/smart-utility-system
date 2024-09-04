@@ -65,7 +65,7 @@ const ProviderHeader = () => {
       <header className="bg-white shadow-sm fixed top-0 w-full z-50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="text-2xl font-bold text-gray-800">
-            <Link to="/">
+            <Link to="/provider-bookings">
               <img
                 src={logo}
                 alt="Company Logo"

@@ -2,18 +2,24 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie"; // Import the js-cookie library
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Import FontAwesomeIcon component
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"; // Import specific icons
 
 function Login() {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State to control password visibility
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      console.log("response1");
       const response1 = await axios.post(
         "http://localhost:3300/api/v1/user/login",
         {
@@ -21,10 +27,6 @@ function Login() {
           password: password,
         }
       );
-
-      console.log("res is", response1);
-
-      console.log("response is ", response1);
 
       // Store the JWT token in a cookie
       Cookies.set("token", response1.data.token, { expires: 10 }); // 10 days expiry
@@ -72,7 +74,7 @@ function Login() {
               />
             </div>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 relative">
             <label
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
@@ -82,12 +84,19 @@ function Login() {
             <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"} // Toggle between text and password
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              onClick={togglePasswordVisibility}
+            >
+              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+            </button>
           </div>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <div>
