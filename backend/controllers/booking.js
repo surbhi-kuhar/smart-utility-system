@@ -50,14 +50,13 @@ module.exports.bookService = async (req, res, next) => {
     console.log("address is ", user.address);
 
     // Create the new booking with the user's address
-    // Create the new booking with the user's address
     const newBooking = await prisma.booking.create({
       data: {
         userId: userId,
         serviceProviderId: serviceProviderId,
         bookingDate: bookingDate,
         bookingStatus: "PENDING",
-        // address: user.address, // Include the user's address in the booking
+        address: user.address, // Include the user's address in the booking
       },
     });
 

@@ -19,6 +19,8 @@ function ProviderBookings() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+
+        console.log(response.data);
         setBookings(response.data);
       } catch (err) {
         setError("Failed to fetch bookings");
@@ -108,7 +110,7 @@ function ProviderBookings() {
                         {booking.user.mobilenumber}
                       </td>
                       <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
-                        {booking.user.address}
+                        {booking.address}
                       </td>
                       <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {booking.bookingDate}

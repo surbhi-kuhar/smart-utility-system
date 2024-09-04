@@ -53,8 +53,8 @@ module.exports.loginProvider = async (req, res, next) => {
   console.log(req.body);
   const { mobilenumber, password } = req.body;
 
-  // const pass = await bcrypt.hash("1234567",10);
-  // console.log(pass);
+  const pass = await bcrypt.hash("1234567",10);
+  console.log(pass);
 
   try {
     const serviceProvider = await prisma.serviceProvider.findFirst({
