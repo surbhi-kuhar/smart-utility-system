@@ -156,15 +156,18 @@ module.exports.getServiceProviders = async (req, res, next) => {
   const { service } = req.params;
 
   try {
+    // Fetch only the service providers who are available
     const serviceProviders = await prisma.serviceProvider.findMany({
       where: {
         service: service,
+        availabilitystatus: 'available', // Assuming 'available' is the value for available providers
       },
       include: {
         ratings: true,
       },
     });
 
+    // Calculate the average rating for each service provider
     const serviceProvidersWithAvgRating = serviceProviders.map((provider) => {
       const totalRatings = provider.ratings.length;
       const sumRatings = provider.ratings.reduce(
@@ -179,19 +182,21 @@ module.exports.getServiceProviders = async (req, res, next) => {
       };
     });
 
+    // Sort the service providers by average rating in descending order
     serviceProvidersWithAvgRating.sort((a, b) => b.avgRating - a.avgRating);
 
     res.status(200).json({
-      message: "Service providers found",
+      message: "Available service providers found",
       serviceProviders: serviceProvidersWithAvgRating,
     });
   } catch (err) {
     res.status(500).json({
-      message: "Unable to find service providers",
+      message: "Unable to find available service providers",
       error: err.message,
     });
   }
 };
+
 
 module.exports.findServiceProvider = async (req, res, next) => {
   try {
