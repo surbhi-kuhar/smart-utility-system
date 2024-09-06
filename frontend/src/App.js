@@ -10,6 +10,7 @@ import BookingPage from "./pages/Booking/Booking";
 import FetchBookings from "./pages/Booking/FetchBookings";
 import LoginProvider from "./pages/Login/LoginProvider";
 import ProviderBookings from "./pages/ProviderBookings.js/ProviderBookings";
+import Location from "./pages/Location/Location";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/booking" element={<BookingPage />}></Route>
           <Route path="/bookings" element={<FetchBookings />}></Route>
           <Route path="/provider-bookings" element={<ProviderBookings />}></Route>
+          <Route path="/location" element={<Location />}></Route>
         </Routes>
       </BrowserRouter>
     </>

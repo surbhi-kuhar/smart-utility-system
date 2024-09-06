@@ -4,6 +4,7 @@ const prisma = new PrismaClient();
 module.exports.bookService = async (req, res, next) => {
   console.log("entered booking controller");
   const { serviceProviderId, bookingDate } = req.body;
+  console.log(serviceProviderId, bookingDate);
   const userId = req.user.id;
   console.log(userId);
 

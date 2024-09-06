@@ -2,20 +2,21 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { FaUserCircle } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Bars } from "react-loader-spinner"; // You can choose any other loader component
 import BookingModal from "../Booking/Booking"; // Adjust the path as needed
 import Header from "../../components/Header";
+import Cookies from "js-cookie";
 
 function Providers() {
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { service } = useParams(); // Get the service from URL parameters
-  const [selectedProviderId, setSelectedProviderId] = useState(null);
-
-  const openModal = (providerId) => setSelectedProviderId(providerId);
-  const closeModal = () => setSelectedProviderId(null);
+  // const [selectedProviderId, setSelectedProviderId] = useState(null);
+  // const [bookingDate, setBookingDate] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -33,6 +34,32 @@ function Providers() {
 
     fetchProviders();
   }, [service]);
+
+  const handleBooking = async (serviceProviderId) => {
+    try {
+      const bookingDate = new Date();
+      
+      const response = await axios.post(
+        "http://localhost:3300/api/v1/booking/book",
+        {
+          serviceProviderId,
+          bookingDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
+      console.log(response);
+      setMessage(response.data.message);
+      navigate(`/location`);
+      setError("");
+    } catch (err) {
+      setError(err.response?.data?.message || "Error booking service");
+      setMessage("");
+    }
+  };
 
   if (loading)
     return (
@@ -103,19 +130,19 @@ function Providers() {
                     : "bg-gray-400 cursor-not-allowed"
                 }`}
                 disabled={provider.availabilitystatus !== "available"}
-                onClick={() => openModal(provider.id)}
+                onClick={() => handleBooking(provider.id)}
               >
                 Book Now
               </button>
             </motion.div>
           ))}
         </div>
-        {selectedProviderId && (
+        {/* {selectedProviderId && (
           <BookingModal
             serviceProviderId={selectedProviderId}
             onClose={closeModal}
           />
-        )}
+        )} */}
       </div>
     </>
   );
