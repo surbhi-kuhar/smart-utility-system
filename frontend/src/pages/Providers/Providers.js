@@ -52,8 +52,10 @@ function Providers() {
         }
       );
       console.log(response);
+      const bookingId = response.data.booking.id;
       setMessage(response.data.message);
-      navigate(`/location`);
+      navigate(`/location`, { state: { bookingId: bookingId } });
+    
       setError("");
     } catch (err) {
       setError(err.response?.data?.message || "Error booking service");

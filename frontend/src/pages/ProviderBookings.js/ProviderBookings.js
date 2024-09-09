@@ -64,6 +64,36 @@ function ProviderBookings() {
     }
   };
 
+  const handleLocationShare = async (bookingId) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        console.log("Latitude: ", latitude, "Longitude: ", longitude);
+
+        try {
+          const token = Cookies.get("token");
+          await axios.post(
+            `http://localhost:3300/api/v1/location/locate`,
+            {
+              bookingId,
+              latitude,
+              longitude,
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          alert("Location shared successfully!");
+        } catch (err) {
+          console.error("Failed to share location", err);
+          alert("Error sharing location.");
+        }
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  };
+
   return (
     <>
       <ProviderHeader />
@@ -149,6 +179,16 @@ function ProviderBookings() {
                           >
                             Update Status
                           </button>
+                        )}
+                        {booking.bookingStatus === "PENDING" ? (
+                          <button
+                            className="bg-green-500 text-white px-4 py-2 rounded-md text-sm"
+                            onClick={() => handleLocationShare(booking.id)}
+                          >
+                            Share location
+                          </button>
+                        ) : (
+                          ""
                         )}
                       </td>
                     </tr>

@@ -96,13 +96,17 @@ module.exports.getAllBookings = async (req, res, next) => {
 };
 
 module.exports.getBookingDetails = async (req, res, next) => {
-  const { id } = req.body;
+  console.log("entered booking details controller");
+  const { bookingId } = req.query; // Use req.query to get query parameters
+  console.log(bookingId);
 
   try {
     const booking = await prisma.booking.findUnique({
-      where: { id: id },
+      where: { id: bookingId },
       include: { serviceProvider: true },
     });
+
+    console.log(booking);
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
