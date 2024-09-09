@@ -5,6 +5,7 @@ const serviceprovider = require("./routes/serviceprovider");
 const booking = require("./routes/booking");
 const rating = require("./routes/rating");
 const location = require("./routes/location");
+const distance = require("./routes/distance");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
@@ -20,6 +21,7 @@ app.use("/api/v1/serviceprovider", serviceprovider);
 app.use("/api/v1/booking", booking);
 app.use("/api/v1/rating", rating);
 app.use("/api/v1/location", location);
+app.use("/api/v1/distance", distance);
 
 // mongoose
 //   .connect(process.env.MONGO_URI)

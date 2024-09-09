@@ -103,7 +103,7 @@ module.exports.getBookingDetails = async (req, res, next) => {
   try {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { serviceProvider: true },
+      include: { serviceProvider: true, user: true },
     });
 
     console.log(booking);

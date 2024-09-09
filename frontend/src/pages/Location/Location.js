@@ -9,9 +9,45 @@ function Location() {
   const [error, setError] = useState(null);
   const locationState = useLocation().state; // Access the state passed during navigation
   const [address, setAddress] = useState("");
+  const [time, setTime] = useState(""); // Store the travel time
   const [loading, setLoading] = useState(true); // For managing loading state
   const [pollAttempts, setPollAttempts] = useState(0); // Keep track of polling attempts
   const MAX_ATTEMPTS = 5; // Set the maximum polling attempts
+
+  const fetchDistance = async (userAddress, providerAddress) => {
+    try {
+      const token = Cookies.get("token");
+
+      const distanceResponse = await axios.get(
+        `http://localhost:3300/api/v1/distance/distancematrix`,
+        {
+          params: {
+            origins: userAddress,
+            destinations: providerAddress,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(
+        "time taken ",
+        distanceResponse.data.rows[0].elements[0].duration.text
+      );
+
+      if (
+        distanceResponse.data.rows &&
+        distanceResponse.data.rows[0].elements[0].duration
+      ) {
+        setTime(distanceResponse.data.rows[0].elements[0].duration.text);
+      } else {
+        setError("Unable to calculate travel time.");
+      }
+    } catch (err) {
+      setError("Error fetching distance data.");
+    }
+  };
 
   useEffect(() => {
     let interval; // Declare the interval to be cleared later
@@ -39,6 +75,7 @@ function Location() {
         console.log(bookingResponse);
 
         const { latitude, longitude } = bookingResponse.data.booking;
+        const userAddress = bookingResponse.data.booking.user.address;
 
         if (latitude && longitude) {
           // Stop polling after getting the location
@@ -48,7 +85,7 @@ function Location() {
           // Clear interval to stop further polling
           clearInterval(interval);
 
-          // Check if the address is already fetched to avoid unnecessary API calls
+          // Fetch provider address only if not already available
           if (!address) {
             const apiKey = "pk.3687b6d15643499519168bf1c0e1e7df"; // Replace with your API key
             const geocodeUrl = `https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${latitude}&lon=${longitude}&format=json`;
@@ -58,6 +95,9 @@ function Location() {
 
             if (locationResponse.data.display_name) {
               setAddress(locationResponse.data.display_name);
+
+              // After both addresses are fetched, calculate distance
+              fetchDistance(userAddress, locationResponse.data.display_name);
             } else {
               setError("Failed to get the address from the coordinates.");
             }
@@ -79,12 +119,10 @@ function Location() {
       }
     };
 
-    // Poll the backend every 5 seconds to check if location is available
     interval = setInterval(() => {
       fetchProviderLocation();
     }, 5000);
 
-    // Clear the interval after the component is unmounted or polling stops
     return () => clearInterval(interval);
   }, [locationState, pollAttempts, address]);
 
@@ -97,7 +135,12 @@ function Location() {
   }
 
   if (error) {
-    return <div className="text-center text-red-500">Error: {error}</div>;
+    return (
+      <>
+        <div className="text-center text-red-500">Error: {error}</div>
+        <p className="text-center">Try refreshing the page</p>
+      </>
+    );
   }
 
   return (
@@ -105,6 +148,9 @@ function Location() {
       <h2 className="text-2xl font-bold text-center mb-4">Provider Location</h2>
       <p className="text-lg text-center">{location}</p>
       {address && <p className="text-lg text-center">Address: {address}</p>}
+      {time && (
+        <p className="text-lg text-center">Estimated Travel Time: {time}</p>
+      )}
     </div>
   );
 }
