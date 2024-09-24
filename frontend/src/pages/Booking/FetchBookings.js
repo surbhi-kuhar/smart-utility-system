@@ -30,10 +30,12 @@ function FetchBookings() {
         for (const booking of response.data.bookings) {
           if (booking.bookingStatus === "COMPLETED") {
             try {
-              const ratingResponse = await axios.get(
-                "http://localhost:3300/api/v1/rating/getrating",
+              const ratingResponse = await axios.post(
+                "http://localhost:3300/api/v1/rating/getrating", // POST request
                 {
-                  serviceProviderId: booking.serviceProvider.id,
+                  serviceProviderId: booking.serviceProvider.id, // Pass serviceProviderId in the request body
+                },
+                {
                   headers: {
                     Authorization: `Bearer ${Cookies.get("token")}`,
                   },
@@ -106,10 +108,12 @@ function FetchBookings() {
         alert("Rating updated successfully!");
 
         // Refresh the rating after update
-        const ratingResponse = await axios.get(
-          "http://localhost:3300/api/v1/rating/getrating",
+        const ratingResponse = await axios.post(
+          "http://localhost:3300/api/v1/rating/getrating", // POST request
           {
-            serviceProviderId: booking.serviceProvider.id,
+            serviceProviderId: booking.serviceProvider.id, // Pass serviceProviderId in the request body
+          },
+          {
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
             },
@@ -139,10 +143,12 @@ function FetchBookings() {
         alert("Rating submitted successfully!");
 
         // Fetch and update the latest rating
-        const ratingResponse = await axios.get(
-          "http://localhost:3300/api/v1/rating/getrating",
+        const ratingResponse = await axios.post(
+          "http://localhost:3300/api/v1/rating/getrating", // POST request
           {
-            serviceProviderId: booking.serviceProvider.id,
+            serviceProviderId: booking.serviceProvider.id, // Pass serviceProviderId in the request body
+          },
+          {
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
             },
@@ -205,12 +211,17 @@ function FetchBookings() {
                   <strong>Booking Status:</strong> {booking.bookingStatus}
                 </p>
                 {booking.bookingStatus === "PENDING" && (
-                  <button
-                    onClick={() => handleCancelBooking(booking.id)}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg mt-4"
-                  >
-                    Cancel Booking
-                  </button>
+                  <>
+                    <button
+                      onClick={() => handleCancelBooking(booking.id)}
+                      className="px-4 py-2 bg-red-500 text-white rounded-lg mt-4"
+                    >
+                      Cancel Booking
+                    </button>
+                    <button className="px-4 py-2 bg-blue-300 text-white rounded-lg mt-4">
+                      Start a chat
+                    </button>
+                  </>
                 )}
                 {booking.bookingStatus === "COMPLETED" && (
                   <div className="mt-4">

@@ -66,29 +66,42 @@ function ProviderBookings() {
 
   const handleLocationShare = async (bookingId) => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        console.log("Latitude: ", latitude, "Longitude: ", longitude);
+      const options = {
+        enableHighAccuracy: true, // This will force more accurate geolocation retrieval
+        timeout: 10000, // Set a timeout for the request (in milliseconds)
+        maximumAge: 0, // Force the browser to not use any cached location data
+      };
 
-        try {
-          const token = Cookies.get("token");
-          await axios.post(
-            `http://localhost:3300/api/v1/location/locate`,
-            {
-              bookingId,
-              latitude,
-              longitude,
-            },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          alert("Location shared successfully!");
-        } catch (err) {
-          console.error("Failed to share location", err);
-          alert("Error sharing location.");
-        }
-      });
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log("Latitude: ", latitude, "Longitude: ", longitude);
+
+          try {
+            const token = Cookies.get("token");
+            await axios.post(
+              `http://localhost:3300/api/v1/location/locate`,
+              {
+                bookingId,
+                latitude,
+                longitude,
+              },
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            alert("Location shared successfully!");
+          } catch (err) {
+            console.error("Failed to share location", err);
+            alert("Error sharing location.");
+          }
+        },
+        (error) => {
+          console.error("Error getting location", error);
+          alert("Failed to get location. Please check your location settings.");
+        },
+        options
+      );
     } else {
       alert("Geolocation is not supported by this browser.");
     }
@@ -190,6 +203,9 @@ function ProviderBookings() {
                         ) : (
                           ""
                         )}
+                        <button className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm">
+                          Start a chat
+                        </button>
                       </td>
                     </tr>
                   ))}

@@ -143,6 +143,10 @@ function Location() {
     );
   }
 
+  const handleStartChat = () =>{
+
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h2 className="text-2xl font-bold text-center mb-4">Provider Location</h2>
@@ -151,6 +155,7 @@ function Location() {
       {time && (
         <p className="text-lg text-center">Estimated Travel Time: {time}</p>
       )}
+      <button className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm" onClick={handleStartChat}>Start a Chat with your provider</button>
     </div>
   );
 }

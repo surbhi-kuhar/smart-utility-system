@@ -68,3 +68,22 @@ model Rating {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 }
+
+model Conversation {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  bookingId         String
+  userId            String
+  serviceProviderId String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  messages          Message[]
+}
+
+model Message {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  conversationId String       @db.ObjectId
+  senderId       String
+  content        String
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+}

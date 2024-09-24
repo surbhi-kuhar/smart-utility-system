@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 
 module.exports.getRating = async (req, res, next) => {
   console.log("inside get rating")
+  console.log(req.body.serviceProviderId);
   const { serviceProviderId } = req.body;
   const userId = req.user.id;
 
