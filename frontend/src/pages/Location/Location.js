@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Bars } from "react-loader-spinner"; // You can choose any other loader component
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode"; // Import jwt-decode
 
 function Location() {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
-  const locationState = useLocation().state; // Access the state passed during navigation
   const [address, setAddress] = useState("");
   const [time, setTime] = useState(""); // Store the travel time
   const [loading, setLoading] = useState(true); // For managing loading state
   const [pollAttempts, setPollAttempts] = useState(0); // Keep track of polling attempts
   const MAX_ATTEMPTS = 5; // Set the maximum polling attempts
+
+  const locationState = useLocation().state; // Access the state passed during navigation
+  const [providerId, setProviderId] = useState(
+    locationState.providerId || null
+  );
+  const [bookingId, setBookingId] = useState(locationState.bookingId || null); // Get bookingId from state
+  const booking = useState(locationState.booking || null);
+
+  const userId = Cookies.get("token")
+    ? jwtDecode(Cookies.get("token")).id
+    : null;
+  const navigate = useNavigate();
 
   const fetchDistance = async (userAddress, providerAddress) => {
     try {
@@ -143,9 +155,24 @@ function Location() {
     );
   }
 
-  const handleStartChat = () =>{
+  const handleStartChat = () => {
+    console.log("ids are", bookingId);
 
-  }
+    if (bookingId && booking) {
+    
+      const conversationId = booking[0].conversationId;
+      const userId = booking[0].userId;
+      const providerId = booking[0].serviceProviderId;
+
+      console.log(conversationId, userId, providerId);
+
+      navigate(`/chat`, {
+        state: { bookingId, conversationId, userId },
+      });
+    } else {
+      setError("Missing required information to start the chat.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -155,7 +182,12 @@ function Location() {
       {time && (
         <p className="text-lg text-center">Estimated Travel Time: {time}</p>
       )}
-      <button className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm" onClick={handleStartChat}>Start a Chat with your provider</button>
+      <button
+        className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm"
+        onClick={handleStartChat}
+      >
+        Start a Chat with your provider
+      </button>
     </div>
   );
 }

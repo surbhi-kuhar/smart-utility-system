@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import ProviderHeader from "../../components/ProviderHeader";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 function ProviderBookings() {
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState("");
   const [editStatus, setEditStatus] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -67,9 +69,9 @@ function ProviderBookings() {
   const handleLocationShare = async (bookingId) => {
     if (navigator.geolocation) {
       const options = {
-        enableHighAccuracy: true, // This will force more accurate geolocation retrieval
-        timeout: 10000, // Set a timeout for the request (in milliseconds)
-        maximumAge: 0, // Force the browser to not use any cached location data
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
       };
 
       navigator.geolocation.getCurrentPosition(
@@ -104,6 +106,21 @@ function ProviderBookings() {
       );
     } else {
       alert("Geolocation is not supported by this browser.");
+    }
+  };
+
+  const handleStartChat = (booking) => {
+    console.log("entered start chat");
+
+    const { id, conversationId, userId, serviceProviderId } = booking; 
+    console.log("ids are", id, conversationId, userId, serviceProviderId);
+
+    if (conversationId) {
+      navigate(`/chat`, {
+        state: { bookingId:id, conversationId, providerId:serviceProviderId },
+      });
+    } else {
+      setError("Missing required information to start the chat.");
     }
   };
 
@@ -203,7 +220,10 @@ function ProviderBookings() {
                         ) : (
                           ""
                         )}
-                        <button className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm">
+                        <button
+                          className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm"
+                          onClick={() => handleStartChat(booking)} // Pass the whole booking object
+                        >
                           Start a chat
                         </button>
                       </td>

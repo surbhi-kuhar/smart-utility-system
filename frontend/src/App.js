@@ -11,12 +11,12 @@ import FetchBookings from "./pages/Booking/FetchBookings";
 import LoginProvider from "./pages/Login/LoginProvider";
 import ProviderBookings from "./pages/ProviderBookings.js/ProviderBookings";
 import Location from "./pages/Location/Location";
+import Chat from "./components/Chat";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/login" element={<Login />}></Route>
@@ -30,8 +30,12 @@ function App() {
           />
           <Route path="/booking" element={<BookingPage />}></Route>
           <Route path="/bookings" element={<FetchBookings />}></Route>
-          <Route path="/provider-bookings" element={<ProviderBookings />}></Route>
+          <Route
+            path="/provider-bookings"
+            element={<ProviderBookings />}
+          ></Route>
           <Route path="/location" element={<Location />}></Route>
+          <Route path="/chat" element={<Chat />}></Route>
         </Routes>
       </BrowserRouter>
     </>

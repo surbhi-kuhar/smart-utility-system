@@ -9,10 +9,10 @@ module.exports.bookService = async (req, res, next) => {
   console.log(userId);
 
   try {
-    // Retrieve the user's address from the User model
+    
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { address: true }, // Assuming the User model has an address field
+      select: { address: true }, 
     });
 
     if (!user || !user.address) {
@@ -33,31 +33,27 @@ module.exports.bookService = async (req, res, next) => {
       });
     }
 
-    const bookingsOnDate = await prisma.booking.count({
-      where: {
-        serviceProviderId: serviceProviderId,
-        bookingDate: bookingDate, // Ensure bookingDate is in correct format
-      },
-    });
-
-    const maxBookingsPerDay = 10;
-
-    if (bookingsOnDate >= maxBookingsPerDay) {
-      return res.status(403).json({
-        message: "The service provider is not available on this date.",
-      });
-    }
-
     console.log("address is ", user.address);
 
-    // Create the new booking with the user's address
+    console.log("Creating conversation with", { userId, serviceProviderId });
+
+    const conversation = await prisma.conversation.create({
+      data: {
+        userId:userId,
+        providerId:serviceProviderId,
+      },
+    });
+    
+    console.log(conversation);
+
     const newBooking = await prisma.booking.create({
       data: {
         userId: userId,
         serviceProviderId: serviceProviderId,
         bookingDate: bookingDate,
         bookingStatus: "PENDING",
-        address: user.address, // Include the user's address in the booking
+        address: user.address, 
+        conversationId: conversation.id,
       },
     });
 

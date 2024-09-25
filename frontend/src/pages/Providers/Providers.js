@@ -38,7 +38,7 @@ function Providers() {
   const handleBooking = async (serviceProviderId) => {
     try {
       const bookingDate = new Date();
-      
+
       const response = await axios.post(
         "http://localhost:3300/api/v1/booking/book",
         {
@@ -53,9 +53,16 @@ function Providers() {
       );
       console.log(response);
       const bookingId = response.data.booking.id;
+      const booking = response.data.booking;
       setMessage(response.data.message);
-      navigate(`/location`, { state: { bookingId: bookingId } });
-    
+      navigate(`/location`, {
+        state: {
+          bookingId: bookingId,
+          providerId: serviceProviderId,
+          booking: booking,
+        },
+      });
+
       setError("");
     } catch (err) {
       setError(err.response?.data?.message || "Error booking service");
