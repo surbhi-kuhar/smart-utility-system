@@ -63,6 +63,8 @@ module.exports.loginUser = async (req, res, next) => {
       },
     });
 
+    console.log("user ", userAlready);
+
     if (userAlready) {
       const pass = await bcrypt.compare(password, userAlready.password);
       if (pass) {

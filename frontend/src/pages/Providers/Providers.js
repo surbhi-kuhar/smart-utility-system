@@ -3,8 +3,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
-import { Bars } from "react-loader-spinner"; // You can choose any other loader component
-import BookingModal from "../Booking/Booking"; // Adjust the path as needed
+import { Bars } from "react-loader-spinner"; 
 import Header from "../../components/Header";
 import Cookies from "js-cookie";
 
@@ -36,6 +35,13 @@ function Providers() {
   }, [service]);
 
   const handleBooking = async (serviceProviderId) => {
+    const token = Cookies.get("token");
+
+    if (!token) {
+      navigate("/error");
+      return;
+    }
+
     try {
       const bookingDate = new Date();
 
@@ -47,14 +53,16 @@ function Providers() {
         },
         {
           headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log(response);
+
       const bookingId = response.data.booking.id;
       const booking = response.data.booking;
       setMessage(response.data.message);
+
+      // Navigate to the location page with booking details
       navigate(`/location`, {
         state: {
           bookingId: bookingId,
@@ -65,8 +73,15 @@ function Providers() {
 
       setError("");
     } catch (err) {
-      setError(err.response?.data?.message || "Error booking service");
-      setMessage("");
+      if (err.response?.status === 401) {
+        // Redirect to error page for unauthorized access
+        navigate("/error", {
+          state: { message: "Unauthorized access. Please log in." },
+        });
+      } else {
+        setError(err.response?.data?.message || "Error booking service");
+        setMessage("");
+      }
     }
   };
 

@@ -28,11 +28,12 @@ function Login() {
         }
       );
 
-      // Store the JWT token in a cookie
-      Cookies.set("token", response1.data.token, { expires: 10 }); // 10 days expiry
-
-      // Redirect to the desired page after successful login
-      navigate("/");
+      if (response1.data.user) {
+        Cookies.set("token", response1.data.token, { expires: 10 }); // 10 days expiry
+        navigate("/");
+      } else {
+        setError("Invalid credentials. Please try again."); // Handle case when user is not found
+      }
     } catch (err) {
       setError("Login failed. Please check your credentials.");
     }

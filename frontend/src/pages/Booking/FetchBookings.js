@@ -240,7 +240,7 @@ function FetchBookings() {
                       Cancel Booking
                     </button>
                     <button
-                      className="px-4 py-2 bg-blue-300 text-white rounded-lg mt-4"
+                      className="px-4 py-2 bg-blue-300 text-white rounded-lg mt-4 ml-3"
                       onClick={() =>
                         handleStartChat({ bookingId: booking.id, booking })
                       }

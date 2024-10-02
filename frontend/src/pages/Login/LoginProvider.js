@@ -27,11 +27,13 @@ function LoginProvider() {
 
       console.log("res is", response1);
 
-      // Store the JWT token in a cookie
-      Cookies.set("token", response1.data.token, { expires: 10 }); // 10 days expiry
+      if (response1.data.serviceProvider) {
+        Cookies.set("token", response1.data.token, { expires: 10 }); // 10 days expiry
 
-      // Redirect to the desired page after successful login
-      navigate("/provider-bookings");
+        navigate("/provider-bookings");
+      } else {
+        setError("Invalid credentials. Please try again."); // Handle case when user is not found
+      }
     } catch (err) {
       setError("Login failed. Please check your credentials.");
     }

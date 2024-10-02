@@ -23,7 +23,7 @@ module.exports.bookService = async (req, res, next) => {
       where: {
         userId: userId,
         serviceProviderId: serviceProviderId,
-        bookingDate: bookingDate, // Ensure bookingDate is in correct format
+        bookingDate: bookingDate, 
       },
     });
 

@@ -12,6 +12,8 @@ import LoginProvider from "./pages/Login/LoginProvider";
 import ProviderBookings from "./pages/ProviderBookings.js/ProviderBookings";
 import Location from "./pages/Location/Location";
 import Chat from "./components/Chat";
+import ErrorPage from "./components/ErrorPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -23,19 +25,64 @@ function App() {
           <Route path="/provider-login" element={<LoginProvider />}></Route>
           <Route path="/signup" element={<Signup />}></Route>
           <Route path="/providers/:service" element={<Providers />} />
-          <Route path="/profile/user" element={<UserProfile />} />
+          <Route path="/error" element={<ErrorPage />} />
+
+          <Route
+            path="/profile/user"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile/provider"
-            element={<ServiceProviderProfile />}
+            element={
+              <ProtectedRoute>
+                <ServiceProviderProfile />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/booking" element={<BookingPage />}></Route>
-          <Route path="/bookings" element={<FetchBookings />}></Route>
+          <Route
+            path="/booking"
+            element={
+              <ProtectedRoute>
+                <BookingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bookings"
+            element={
+              <ProtectedRoute>
+                <FetchBookings />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/provider-bookings"
-            element={<ProviderBookings />}
-          ></Route>
-          <Route path="/location" element={<Location />}></Route>
-          <Route path="/chat" element={<Chat />}></Route>
+            element={
+              <ProtectedRoute>
+                <ProviderBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/location"
+            element={
+              <ProtectedRoute>
+                <Location />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
