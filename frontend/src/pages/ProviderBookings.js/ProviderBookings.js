@@ -195,42 +195,42 @@ function ProviderBookings() {
                         )}
                       </td>
                       <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
-                        {editStatus === booking.id ? (
-                          <button
-                            onClick={() => handleUpdateStatus(booking.id)}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm"
-                          >
-                            Update
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              handleUpdateClick(
-                                booking.id,
-                                booking.bookingStatus
-                              )
-                            }
-                            className="bg-yellow-500 text-white px-4 py-2 rounded-md text-sm"
-                          >
-                            Update Status
-                          </button>
+                        {booking.bookingStatus === "PENDING" && (
+                          <>
+                            {editStatus === booking.id ? (
+                              <button
+                                onClick={() => handleUpdateStatus(booking.id)}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm"
+                              >
+                                Update
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() =>
+                                  handleUpdateClick(
+                                    booking.id,
+                                    booking.bookingStatus
+                                  )
+                                }
+                                className="bg-yellow-500 text-white px-4 py-2 rounded-md text-sm mb-2"
+                              >
+                                Update Status
+                              </button>
+                            )}
+                            <button
+                              className="bg-green-500 text-white px-4 py-2 rounded-md text-sm mb-2"
+                              onClick={() => handleLocationShare(booking.id)}
+                            >
+                              Share location
+                            </button>
+                            <button
+                              className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm mb-2"
+                              onClick={() => handleStartChat(booking)} // Pass the whole booking object
+                            >
+                              Start a chat
+                            </button>
+                          </>
                         )}
-                        {booking.bookingStatus === "PENDING" ? (
-                          <button
-                            className="bg-green-500 text-white px-4 py-2 rounded-md text-sm"
-                            onClick={() => handleLocationShare(booking.id)}
-                          >
-                            Share location
-                          </button>
-                        ) : (
-                          ""
-                        )}
-                        <button
-                          className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm"
-                          onClick={() => handleStartChat(booking)} // Pass the whole booking object
-                        >
-                          Start a chat
-                        </button>
                       </td>
                     </tr>
                   ))}
