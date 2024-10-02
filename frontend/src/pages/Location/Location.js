@@ -3,7 +3,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Bars } from "react-loader-spinner"; // You can choose any other loader component
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; // Import jwt-decode
+import {jwtDecode} from "jwt-decode"; // Fixing the import statement
 
 function Location() {
   const [location, setLocation] = useState(null);
@@ -16,10 +16,10 @@ function Location() {
 
   const locationState = useLocation().state; // Access the state passed during navigation
   const [providerId, setProviderId] = useState(
-    locationState.providerId || null
+    locationState?.providerId || null
   );
-  const [bookingId, setBookingId] = useState(locationState.bookingId || null); // Get bookingId from state
-  const booking = useState(locationState.booking || null);
+  const [bookingId, setBookingId] = useState(locationState?.bookingId || null); // Get bookingId from state
+  const booking = useState(locationState?.booking || null);
 
   const userId = Cookies.get("token")
     ? jwtDecode(Cookies.get("token")).id
@@ -43,11 +43,6 @@ function Location() {
         }
       );
 
-      console.log(
-        "time taken ",
-        distanceResponse.data.rows[0].elements[0].duration.text
-      );
-
       if (
         distanceResponse.data.rows &&
         distanceResponse.data.rows[0].elements[0].duration
@@ -57,7 +52,9 @@ function Location() {
         setError("Unable to calculate travel time.");
       }
     } catch (err) {
-      setError("Error fetching distance data.");
+      const errorMessage =
+        err.response?.data?.message || "Error fetching distance data.";
+      setError(errorMessage);
     }
   };
 
@@ -84,8 +81,6 @@ function Location() {
           }
         );
 
-        console.log(bookingResponse);
-
         const { latitude, longitude } = bookingResponse.data.booking;
         const userAddress = bookingResponse.data.booking.user.address;
 
@@ -102,8 +97,6 @@ function Location() {
             const apiKey = "pk.3687b6d15643499519168bf1c0e1e7df"; // Replace with your API key
             const geocodeUrl = `https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${latitude}&lon=${longitude}&format=json`;
             const locationResponse = await axios.get(geocodeUrl);
-
-            console.log(locationResponse);
 
             if (locationResponse.data.display_name) {
               setAddress(locationResponse.data.display_name);
@@ -125,7 +118,9 @@ function Location() {
           }
         }
       } catch (err) {
-        setError("Error fetching location data.");
+        const errorMessage =
+          err.response?.data?.message || "Error fetching location data.";
+        setError(errorMessage);
         setLoading(false);
         clearInterval(interval); // Stop polling on error
       }
@@ -156,15 +151,10 @@ function Location() {
   }
 
   const handleStartChat = () => {
-    console.log("ids are", bookingId);
-
     if (bookingId && booking) {
-    
       const conversationId = booking[0].conversationId;
       const userId = booking[0].userId;
       const providerId = booking[0].serviceProviderId;
-
-      console.log(conversationId, userId, providerId);
 
       navigate(`/chat`, {
         state: { bookingId, conversationId, userId },

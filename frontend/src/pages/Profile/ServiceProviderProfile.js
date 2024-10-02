@@ -7,6 +7,7 @@ import ProviderHeader from "../../components/ProviderHeader";
 const ServiceProviderProfile = ({ serviceProviderId }) => {
   const [profileData, setProfileData] = useState({});
   const [editMode, setEditMode] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
   const navigate = useNavigate();
 
   const serviceOptions = [
@@ -55,6 +56,7 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
   };
 
   const handleUpdate = async () => {
+    setErrorMessage(""); // Reset error message
     try {
       await axios.post(
         `http://localhost:3300/api/v1/serviceprovider/update`,
@@ -69,10 +71,14 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
+      setErrorMessage(
+        error.response?.data?.message || "Error updating profile"
+      );
     }
   };
 
   const handleDelete = async () => {
+    setErrorMessage(""); // Reset error message
     try {
       await axios.delete(
         `http://localhost:3300/api/v1/serviceprovider/delete`,
@@ -86,6 +92,9 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
       navigate("/"); // Redirect to home after deletion
     } catch (error) {
       console.error("Error deleting account:", error);
+      setErrorMessage(
+        error.response?.data?.message || "Error deleting account"
+      );
     }
   };
 
@@ -97,6 +106,12 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
           <h2 className="text-3xl font-semibold text-gray-800 mb-6">
             Service Provider Profile
           </h2>
+
+          {/* Error message display */}
+          {errorMessage && (
+            <div className="mb-4 text-red-600">{errorMessage}</div>
+          )}
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">

@@ -12,6 +12,7 @@ const UserProfile = ({ userId }) => {
     address: "",
   });
   const [editMode, setEditMode] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // Add error state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +38,9 @@ const UserProfile = ({ userId }) => {
         });
       } catch (error) {
         console.error("Error fetching profile data:", error);
+        setErrorMessage(
+          error.response?.data?.message || "Failed to fetch profile data"
+        );
       }
     };
 
@@ -61,11 +65,14 @@ const UserProfile = ({ userId }) => {
       );
 
       console.log(data);
-
       setEditMode(false);
       alert("Profile updated successfully!");
+      setErrorMessage(""); // Clear any previous error message
     } catch (error) {
       console.error("Error updating profile:", error);
+      setErrorMessage(
+        error.response?.data?.message || "Failed to update profile"
+      );
     }
   };
 
@@ -88,6 +95,9 @@ const UserProfile = ({ userId }) => {
       window.location.reload(); // Reload the page to update the header
     } catch (error) {
       console.error("Error deleting account:", error);
+      setErrorMessage(
+        error.response?.data?.message || "Failed to delete account"
+      );
     }
   };
 
@@ -99,6 +109,11 @@ const UserProfile = ({ userId }) => {
           <h2 className="text-3xl font-semibold text-gray-800 mb-6">
             User Profile
           </h2>
+
+          {errorMessage && (
+            <div className="mb-4 text-red-600">{errorMessage}</div>
+          )}
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -153,6 +168,7 @@ const UserProfile = ({ userId }) => {
               />
             </div>
           </div>
+
           <div className="mt-6 flex justify-between">
             {editMode ? (
               <button

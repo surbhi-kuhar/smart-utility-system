@@ -25,7 +25,9 @@ function ProviderBookings() {
         console.log(response.data);
         setBookings(response.data);
       } catch (err) {
-        setError("Failed to fetch bookings");
+        const errorMessage =
+          err.response?.data?.message || "Failed to fetch bookings.";
+        setError(errorMessage);
       }
     };
 
@@ -45,7 +47,7 @@ function ProviderBookings() {
     try {
       const token = Cookies.get("token");
       await axios.post(
-        `http://localhost:3300/api/v1/booking/updatestatus`,
+        "http://localhost:3300/api/v1/booking/updatestatus",
         { bookingId, bookingStatus: selectedStatus },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -62,7 +64,9 @@ function ProviderBookings() {
 
       setEditStatus(null);
     } catch (err) {
-      setError("Failed to update booking status.");
+      const errorMessage =
+        err.response?.data?.message || "Failed to update booking status.";
+      setError(errorMessage);
     }
   };
 
@@ -82,7 +86,7 @@ function ProviderBookings() {
           try {
             const token = Cookies.get("token");
             await axios.post(
-              `http://localhost:3300/api/v1/location/locate`,
+              "http://localhost:3300/api/v1/location/locate",
               {
                 bookingId,
                 latitude,
@@ -94,8 +98,9 @@ function ProviderBookings() {
             );
             alert("Location shared successfully!");
           } catch (err) {
-            console.error("Failed to share location", err);
-            alert("Error sharing location.");
+            const errorMessage =
+              err.response?.data?.message || "Error sharing location.";
+            alert(errorMessage);
           }
         },
         (error) => {
@@ -112,12 +117,12 @@ function ProviderBookings() {
   const handleStartChat = (booking) => {
     console.log("entered start chat");
 
-    const { id, conversationId, userId, serviceProviderId } = booking; 
+    const { id, conversationId, userId, serviceProviderId } = booking;
     console.log("ids are", id, conversationId, userId, serviceProviderId);
 
     if (conversationId) {
-      navigate(`/chat`, {
-        state: { bookingId:id, conversationId, providerId:serviceProviderId },
+      navigate("/chat", {
+        state: { bookingId: id, conversationId, providerId: serviceProviderId },
       });
     } else {
       setError("Missing required information to start the chat.");

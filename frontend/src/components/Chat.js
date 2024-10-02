@@ -11,6 +11,7 @@ const Chat = () => {
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [error, setError] = useState(""); // State for error messages
   const socketRef = useRef(null);
 
   // Decode token to get the logged-in user's ID (whether it's a provider or customer)
@@ -56,7 +57,7 @@ const Chat = () => {
     };
   }, [conversationId, token]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (newMessage.trim()) {
       const messageData = {
         conversationId,
@@ -64,14 +65,25 @@ const Chat = () => {
         content: newMessage,
       };
 
-      socketRef.current.emit("sendMessage", messageData);
-      axios.post("http://localhost:3300/api/v1/chat/message", messageData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setNewMessage("");
+      try {
+        socketRef.current.emit("sendMessage", messageData);
+        await axios.post(
+          "http://localhost:3300/api/v1/chat/message",
+          messageData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setNewMessage("");
+        setError(""); // Clear any previous error
+      } catch (err) {
+        // Handle the error response from the backend
+        const errorMessage =
+          err.response?.data?.message || "An error occurred. Please try again.";
+        setError(errorMessage); // Set error message state
+      }
     }
   };
 
@@ -84,7 +96,9 @@ const Chat = () => {
             <div
               key={index}
               className={`flex ${
-                msg.senderId === loggedInUserId ? "justify-end" : "justify-start"
+                msg.senderId === loggedInUserId
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
               <div
@@ -103,6 +117,9 @@ const Chat = () => {
           ))}
         </div>
       </div>
+
+      {/* Error Message Display */}
+      {error && <div className="p-2 text-red-500 bg-red-100">{error}</div>}
 
       <div className="bg-white p-4 sticky bottom-0 w-full">
         <div className="flex items-center space-x-4">

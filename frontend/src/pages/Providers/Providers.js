@@ -3,7 +3,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
-import { Bars } from "react-loader-spinner"; 
+import { Bars } from "react-loader-spinner";
 import Header from "../../components/Header";
 import Cookies from "js-cookie";
 
@@ -11,9 +11,7 @@ function Providers() {
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { service } = useParams(); // Get the service from URL parameters
-  // const [selectedProviderId, setSelectedProviderId] = useState(null);
-  // const [bookingDate, setBookingDate] = useState("");
+  const { service } = useParams(); 
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
@@ -73,15 +71,10 @@ function Providers() {
 
       setError("");
     } catch (err) {
-      if (err.response?.status === 401) {
-        // Redirect to error page for unauthorized access
-        navigate("/error", {
-          state: { message: "Unauthorized access. Please log in." },
-        });
-      } else {
-        setError(err.response?.data?.message || "Error booking service");
-        setMessage("");
-      }
+      // If the error comes from the backend, use the error message from the response
+      const backendErrorMessage = err.response?.data?.message || "Error booking service";
+      setError(backendErrorMessage);
+      setMessage(""); // Clear any existing success messages
     }
   };
 
@@ -107,6 +100,16 @@ function Providers() {
       <Header />
       <div className="min-h-screen bg-gray-100 p-6">
         <h1 className="text-3xl font-bold text-center mb-12"></h1>
+        {message && (
+          <div className="text-center text-green-500 mb-4">
+            {message}
+          </div>
+        )}
+        {error && (
+          <div className="text-center text-red-500 mb-4">
+            {error}
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {providers.map((provider) => (
             <motion.div
@@ -161,12 +164,6 @@ function Providers() {
             </motion.div>
           ))}
         </div>
-        {/* {selectedProviderId && (
-          <BookingModal
-            serviceProviderId={selectedProviderId}
-            onClose={closeModal}
-          />
-        )} */}
       </div>
     </>
   );
