@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import StarRating from "../../components/StarRating";
+import { useNavigate } from "react-router-dom";
 
 function FetchBookings() {
   const [bookings, setBookings] = useState([]);
@@ -10,6 +11,7 @@ function FetchBookings() {
   const [ratingError, setRatingError] = useState("");
   const [existingRating, setExistingRating] = useState({});
   const [editMode, setEditMode] = useState({}); // State to manage edit mode
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -181,6 +183,25 @@ function FetchBookings() {
     }
   };
 
+  const handleStartChat = ({ bookingId, booking }) => {
+    console.log("booking id is", bookingId);
+    console.log("booking is", booking);
+
+    if (bookingId && booking) {
+      const conversationId = booking.conversationId; // Assuming booking has conversationId directly
+      const userId = booking.userId; // Assuming booking has userId directly
+      const providerId = booking.serviceProviderId; // Assuming booking has serviceProviderId directly
+
+      console.log(conversationId, userId, providerId);
+
+      navigate(`/chat`, {
+        state: { bookingId, conversationId, userId },
+      });
+    } else {
+      setError("Missing required information to start the chat.");
+    }
+  };
+
   return (
     <>
       <div className="container mx-auto px-4 py-24">
@@ -218,7 +239,12 @@ function FetchBookings() {
                     >
                       Cancel Booking
                     </button>
-                    <button className="px-4 py-2 bg-blue-300 text-white rounded-lg mt-4">
+                    <button
+                      className="px-4 py-2 bg-blue-300 text-white rounded-lg mt-4"
+                      onClick={() =>
+                        handleStartChat({ bookingId: booking.id, booking })
+                      }
+                    >
                       Start a chat
                     </button>
                   </>
