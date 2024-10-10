@@ -1,5 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const twilio = require("twilio");
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
+const mynumber = process.env.TWILIO_NUMBER;
+const client = new twilio(accountSid, authToken);
 
 module.exports.bookService = async (req, res, next) => {
   console.log("entered booking controller");
@@ -9,10 +14,9 @@ module.exports.bookService = async (req, res, next) => {
   console.log(userId);
 
   try {
-    
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { address: true }, 
+      select: { address: true },
     });
 
     if (!user || !user.address) {
@@ -23,7 +27,7 @@ module.exports.bookService = async (req, res, next) => {
       where: {
         userId: userId,
         serviceProviderId: serviceProviderId,
-        bookingDate: bookingDate, 
+        bookingDate: bookingDate,
       },
     });
 
@@ -39,11 +43,11 @@ module.exports.bookService = async (req, res, next) => {
 
     const conversation = await prisma.conversation.create({
       data: {
-        userId:userId,
-        providerId:serviceProviderId,
+        userId: userId,
+        providerId: serviceProviderId,
       },
     });
-    
+
     console.log(conversation);
 
     const newBooking = await prisma.booking.create({
@@ -52,12 +56,39 @@ module.exports.bookService = async (req, res, next) => {
         serviceProviderId: serviceProviderId,
         bookingDate: bookingDate,
         bookingStatus: "PENDING",
-        address: user.address, 
+        address: user.address,
         conversationId: conversation.id,
       },
     });
 
-    console.log(newBooking);
+    console.log("new booking is ", newBooking);
+
+    const serviceProvider = await prisma.serviceProvider.findUnique({
+      where: { id: serviceProviderId },
+      select: { name: true, mobilenumber: true },
+    });
+
+    if (serviceProvider) {
+      console.log("-----------------------------------------");
+      console.log(serviceProvider.name);
+      console.log(newBooking.address);
+      console.log(newBooking.bookingDate);
+      console.log(serviceProvider.mobilenumber);
+
+      await client.messages.create({
+        body: `Hello ${serviceProvider.name}, you have a new booking from Taskmasters!
+              Details:
+              - Customer Address: ${newBooking.address}
+              - Booking Date: ${newBooking.bookingDate}
+              Please log in to your account to view more details and manage the booking.
+              
+              Thank you for using Taskmasters!`,
+        to: `+91${serviceProvider.mobilenumber}`,
+        from: mynumber,
+      });
+    } else {
+      console.error("Service provider not found");
+    }
 
     res.status(201).json({
       booking: newBooking,
