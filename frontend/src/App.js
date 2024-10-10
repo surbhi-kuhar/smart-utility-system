@@ -10,6 +10,7 @@ import BookingPage from "./pages/Booking/Booking";
 import FetchBookings from "./pages/Booking/FetchBookings";
 import LoginProvider from "./pages/Login/LoginProvider";
 import About from "./pages/About/About";
+import Services from "./pages/Services/Services";
 import ProviderBookings from "./pages/ProviderBookings.js/ProviderBookings";
 import Location from "./pages/Location/Location";
 import Chat from "./components/Chat";
@@ -24,9 +25,9 @@ function App() {
           <Route path="/" element={<Home />}></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/about" element={<About />}></Route>
+          <Route path="/services" element={<Services />}></Route>
           <Route path="/provider-login" element={<LoginProvider />}></Route>
           <Route path="/signup" element={<Signup />}></Route>
-          <Route path="/providers/:service" element={<Providers />} />
           <Route path="/error" element={<ErrorPage />} />
 
           <Route
@@ -34,6 +35,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/providers/:service"
+            element={
+              <ProtectedRoute>
+                <Providers />
               </ProtectedRoute>
             }
           />

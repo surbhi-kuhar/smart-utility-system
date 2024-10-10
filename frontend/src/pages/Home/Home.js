@@ -17,6 +17,12 @@ import {
   FaSpa,
   FaDumbbell,
   FaChalkboardTeacher,
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+  FaEnvelope,
+  FaPhone,
 } from "react-icons/fa";
 import image1 from "../../images/ac-service.jpg";
 import image2 from "../../images/painter.jpg";
@@ -157,6 +163,105 @@ const Home = () => {
           </motion.button>
         </section> */}
       </div>
+
+      <footer className="bg-gray-900 text-white py-10">
+        <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+          {/* About Us Section */}
+          <div className="flex flex-col items-start">
+            <h4 className="text-lg font-bold mb-4">About Us</h4>
+            <p className="text-sm">
+              We provide reliable home services with top-rated professionals.
+              From plumbing to electrical work, we ensure you get the best
+              service at your doorstep.
+            </p>
+          </div>
+
+          {/* Quick Links Section */}
+          <div className="flex flex-col items-start">
+            <h4 className="text-lg font-bold mb-4">Quick Links</h4>
+            <ul className="space-y-2">
+              <li>
+                <a className="text-sm hover:underline">Our Services</a>
+              </li>
+              <li>
+                <a className="text-sm hover:underline">About Us</a>
+              </li>
+              <li>
+                <a className="text-sm hover:underline">Contact Us</a>
+              </li>
+              <li>
+                <a className="text-sm hover:underline">FAQs</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Information Section */}
+          <div className="flex flex-col items-start">
+            <h4 className="text-lg font-bold mb-4">Contact Us</h4>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center">
+                <FaEnvelope className="mr-2" />
+                info@taskmasters.com
+              </li>
+              <li className="flex items-center">
+                <FaPhone className="mr-2" />
+                +91 91980XXXXX
+              </li>
+            </ul>
+
+            {/* Social Media Icons */}
+            <div className="flex space-x-4 mt-4">
+              <a
+                href="https://www.facebook.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FaFacebook
+                  className="text-blue-500 hover:text-white"
+                  size={24}
+                />
+              </a>
+              <a
+                href="https://www.twitter.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FaTwitter
+                  className="text-blue-400 hover:text-white"
+                  size={24}
+                />
+              </a>
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FaInstagram
+                  className="text-pink-600 hover:text-white"
+                  size={24}
+                />
+              </a>
+              <a
+                href="https://www.linkedin.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FaLinkedin
+                  className="text-blue-600 hover:text-white"
+                  size={24}
+                />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Copyright Section */}
+        <div className="text-center text-gray-500 mt-8">
+          <p className="text-sm">
+            &copy; {new Date().getFullYear()} Taskmasters. All Rights Reserved.
+          </p>
+        </div>
+      </footer>
     </>
   );
 };
