@@ -53,7 +53,7 @@ module.exports.loginProvider = async (req, res, next) => {
   console.log(req.body);
   const { mobilenumber, password } = req.body;
 
-  const pass = await bcrypt.hash("1234567",10);
+  const pass = await bcrypt.hash("1234567", 10);
   console.log(pass);
 
   try {
@@ -153,6 +153,7 @@ module.exports.deleteProvider = async (req, res, next) => {
 };
 
 module.exports.getServiceProviders = async (req, res, next) => {
+  console.log("calling get provider bookings controller");
   const { service } = req.params;
 
   try {
@@ -160,7 +161,7 @@ module.exports.getServiceProviders = async (req, res, next) => {
     const serviceProviders = await prisma.serviceProvider.findMany({
       where: {
         service: service,
-        availabilitystatus: 'available', // Assuming 'available' is the value for available providers
+        availabilitystatus: "available", // Assuming 'available' is the value for available providers
       },
       include: {
         ratings: true,
@@ -196,7 +197,6 @@ module.exports.getServiceProviders = async (req, res, next) => {
     });
   }
 };
-
 
 module.exports.findServiceProvider = async (req, res, next) => {
   try {

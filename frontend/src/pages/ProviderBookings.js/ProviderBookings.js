@@ -13,27 +13,36 @@ function ProviderBookings() {
 
   const navigate = useNavigate();
 
+  const fetchBookings = async () => {
+    try {
+      const token = Cookies.get("token");
+      const response = await axios.get(
+        "http://localhost:3300/api/v1/booking/getproviderbookings",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setBookings(response.data);
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || "Failed to fetch bookings.";
+      setError(errorMessage);
+    }
+  };
+
+  // Using polling to refresh bookings every 10 seconds
   useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const token = Cookies.get("token");
-        const response = await axios.get(
-          "http://localhost:3300/api/v1/booking/getproviderbookings",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        console.log(response.data);
-        setBookings(response.data);
-      } catch (err) {
-        const errorMessage =
-          err.response?.data?.message || "Failed to fetch bookings.";
-        setError(errorMessage);
-      }
-    };
-
+    // Fetching bookings immediately on component mount
     fetchBookings();
+
+    // Set up polling
+    const intervalId = setInterval(() => {
+      fetchBookings(); // Fetch bookings every 10 seconds
+    }, 10000); // 10000 ms = 10 seconds
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleUpdateClick = (bookingId, currentStatus) => {
@@ -56,6 +65,7 @@ function ProviderBookings() {
         }
       );
 
+      // Update booking status in the state
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
           booking.id === bookingId
@@ -83,7 +93,6 @@ function ProviderBookings() {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          console.log("Latitude: ", latitude, "Longitude: ", longitude);
 
           try {
             const token = Cookies.get("token");
@@ -117,10 +126,7 @@ function ProviderBookings() {
   };
 
   const handleStartChat = (booking) => {
-    console.log("entered start chat");
-
     const { id, conversationId, userId, serviceProviderId } = booking;
-    console.log("ids are", id, conversationId, userId, serviceProviderId);
 
     if (conversationId) {
       navigate("/chat", {
