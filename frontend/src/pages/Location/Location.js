@@ -135,7 +135,7 @@ function Location() {
 
   if (loading && !error) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen bg-gray-200">
         <Bars height="80" width="80" color="#5ab9c1" ariaLabel="bars-loading" />
       </div>
     );
@@ -143,10 +143,10 @@ function Location() {
 
   // if (error) {
   //   return (
-  //     <>
-  //       <div className="text-center text-red-500">Error: {error}</div>
-  //       <p className="text-center">Try refreshing the page</p>
-  //     </>
+  //     <div className="text-center text-red-500">
+  //       <p>Error: {error}</p>
+  //       <p className="mt-2">Try refreshing the page</p>
+  //     </div>
   //   );
   // }
 
@@ -165,23 +165,46 @@ function Location() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6 md:p-12 flex flex-col items-center">
       <h2 className="text-2xl font-bold text-center mb-4">Provider Location</h2>
       <p className="text-lg text-center">{location}</p>
-      {address && <p className="text-lg text-center">Address: {address}</p>}
+      {address && (
+        <p className="text-lg text-center mt-2">
+          <b>
+            <i>Address:</i>
+          </b>{" "}
+          {address}
+        </p>
+      )}
       {time ? (
-        <p className="text-lg text-center">Estimated Travel Time: {time}</p>
+        <p className="text-lg text-center mt-2">
+          <b>
+            <i>Estimated Travel Time:</i>
+          </b>{" "}
+          {time}
+        </p>
       ) : (
-        <p className="text-lg text-center to-red-600">
-          Unable to get Travel Time currently {time}
+        <p className="text-lg text-center mt-2 text-red-600">
+          Unable to get Travel Time currently.
         </p>
       )}
       <button
-        className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm"
+        className={`mt-4 bg-blue-600 text-white px-6 py-2 rounded-md text-sm transition duration-300 ${
+          loading || error
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:bg-blue-700"
+        }`}
         onClick={handleStartChat}
+        disabled={loading || error}
       >
         Start a Chat with your provider
       </button>
+      {error && (
+        <div className="mt-4 text-center text-red-500">
+          <p>Error: {error}</p>
+          <p className="mt-2">Please try refreshing the page.</p>
+        </div>
+      )}
     </div>
   );
 }
