@@ -3,7 +3,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Bars } from "react-loader-spinner"; // You can choose any other loader component
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode"; // Fixing the import statement
+import { jwtDecode } from "jwt-decode"; // Fixing the import statement
 
 function Location() {
   const [location, setLocation] = useState(null);
@@ -141,14 +141,14 @@ function Location() {
     );
   }
 
-  if (error) {
-    return (
-      <>
-        <div className="text-center text-red-500">Error: {error}</div>
-        <p className="text-center">Try refreshing the page</p>
-      </>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <>
+  //       <div className="text-center text-red-500">Error: {error}</div>
+  //       <p className="text-center">Try refreshing the page</p>
+  //     </>
+  //   );
+  // }
 
   const handleStartChat = () => {
     if (bookingId && booking) {
@@ -169,8 +169,12 @@ function Location() {
       <h2 className="text-2xl font-bold text-center mb-4">Provider Location</h2>
       <p className="text-lg text-center">{location}</p>
       {address && <p className="text-lg text-center">Address: {address}</p>}
-      {time && (
+      {time ? (
         <p className="text-lg text-center">Estimated Travel Time: {time}</p>
+      ) : (
+        <p className="text-lg text-center to-red-600">
+          Unable to get Travel Time currently {time}
+        </p>
       )}
       <button
         className="bg-blue-300 text-white px-4 py-2 rounded-md text-sm"

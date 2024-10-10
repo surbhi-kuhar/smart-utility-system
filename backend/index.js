@@ -6,6 +6,7 @@ const booking = require("./routes/booking");
 const rating = require("./routes/rating");
 const location = require("./routes/location");
 const distance = require("./routes/distance");
+const notify = require("./routes/notify");
 const chat = require("./routes/chat");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -62,6 +63,7 @@ app.use("/api/v1/rating", rating);
 app.use("/api/v1/location", location);
 app.use("/api/v1/distance", distance);
 app.use("/api/v1/chat",chat);
+app.use("/api/v1/notify",notify);
 
 // mongoose
 //   .connect(process.env.MONGO_URI)

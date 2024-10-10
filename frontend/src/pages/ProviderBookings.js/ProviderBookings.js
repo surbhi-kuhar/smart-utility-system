@@ -9,6 +9,8 @@ function ProviderBookings() {
   const [error, setError] = useState("");
   const [editStatus, setEditStatus] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [amounts, setAmounts] = useState({}); // To store the amount for each booking
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -129,6 +131,48 @@ function ProviderBookings() {
     }
   };
 
+  const handleAmountChange = (bookingId, value) => {
+    setAmounts((prev) => ({
+      ...prev,
+      [bookingId]: value,
+    }));
+  };
+
+  const handleSendPaymentNotification = async (bookingId) => {
+    const amount = amounts[bookingId];
+    if (!amount) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+
+    try {
+      const token = Cookies.get("token");
+      const response = await axios.post(
+        "http://localhost:3300/api/v1/notify/pay",
+        { bookingId, amount }, // Include amount in the request
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.found) {
+        setAmounts((prev) => ({
+          ...prev,
+          [bookingId]: "", // Clear the value for the specific booking
+        }));
+
+        // Display the success message
+        alert("Payment notification sent successfully.");
+      } else {
+        alert("Failed to send payment notification.");
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || "Failed to send payment notification.";
+      alert(errorMessage);
+    }
+  };
+
   return (
     <>
       <ProviderHeader />
@@ -228,6 +272,32 @@ function ProviderBookings() {
                               onClick={() => handleStartChat(booking)} // Pass the whole booking object
                             >
                               Start a chat
+                            </button>
+                          </>
+                        )}
+                        {booking.bookingStatus === "COMPLETED" && (
+                          <>
+                            <input
+                              type="number"
+                              placeholder="Enter Amount"
+                              value={amounts[booking.id] || ""}
+                              onChange={(e) =>
+                                handleAmountChange(booking.id, e.target.value)
+                              }
+                              className="border rounded-md px-2 py-1 mb-2 text-sm"
+                            />
+                            <button
+                              onClick={() =>
+                                handleSendPaymentNotification(booking.id)
+                              }
+                              disabled={!amounts[booking.id]} // Disable the button if no amount is entered
+                              className={`bg-green-500 text-white px-4 py-2 rounded-md text-sm ${
+                                !amounts[booking.id]
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                              }`}
+                            >
+                              Send Payment Notification
                             </button>
                           </>
                         )}
