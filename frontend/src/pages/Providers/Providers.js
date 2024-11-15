@@ -6,35 +6,47 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Bars } from "react-loader-spinner";
 import Header from "../../components/Header";
 import Cookies from "js-cookie";
+import PaymentModal from "../PaymentModal";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe("your-publishable-key-here");
 
 function Providers() {
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { service } = useParams(); 
+  const { service } = useParams();
   const [message, setMessage] = useState("");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedProviderId, setSelectedProviderId] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProviders = async () => {
-      try {
-        const { data } = await axios.get(
-          `http://localhost:3300/api/v1/serviceprovider/service/${service}`
-        );
-        setProviders(data.serviceProviders);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
+  const PLATFORM_FEES = {
+    "Cleaning": 49,
+    "Plumbing": 59,
+    "Electrical": 69,
+    "Painting": 59,
+    "Carpentry": 55,
+    "Appliance Repair": 59,
+    "HVAC Services": 69,
+    "Pest Control": 69,
+    "Gardening & Landscaping": 49,
+    "Beauty & Wellness": 59,
+    "Fitness Training": 59,
+    "Tutoring": 55,
+  };
 
-    fetchProviders();
-  }, [service]);
+  const platformFee = PLATFORM_FEES[service] || 0;
 
-  const handleBooking = async (serviceProviderId) => {
+  const handleBookNow = (serviceProviderId) => {
+    setSelectedProviderId(serviceProviderId);
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSuccess = async (serviceProviderId) => {
+    // Complete booking logic
     const token = Cookies.get("token");
-
     if (!token) {
       navigate("/error");
       return;
@@ -42,7 +54,6 @@ function Providers() {
 
     try {
       const bookingDate = new Date();
-
       const response = await axios.post(
         "http://localhost:3300/api/v1/booking/book",
         {
@@ -70,25 +81,37 @@ function Providers() {
       });
 
       setError("");
+      setShowPaymentModal(false);
     } catch (err) {
-      // If the error comes from the backend, use the error message from the response
-      const backendErrorMessage = err.response?.data?.message || "Error booking service";
+      const backendErrorMessage =
+        err.response?.data?.message || "Error booking service";
       setError(backendErrorMessage);
       setMessage(""); // Clear any existing success messages
+      setShowPaymentModal(false);
     }
   };
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:3300/api/v1/serviceprovider/service/${service}`
+        );
+        setProviders(data.serviceProviders);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchProviders();
+  }, [service]);
 
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
-        <Bars
-          height="80"
-          width="80"
-          color="#5ab9c1"
-          ariaLabel="bars-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
-        />
+        <Bars height="80" width="80" color="#5ab9c1" ariaLabel="bars-loading" />
       </div>
     );
 
@@ -99,17 +122,10 @@ function Providers() {
     <>
       <Header />
       <div className="min-h-screen bg-gray-100 p-6">
-        <h1 className="text-3xl font-bold text-center mb-12"></h1>
         {message && (
-          <div className="text-center text-green-500 mb-4">
-            {message}
-          </div>
+          <div className="text-center text-green-500 mb-4">{message}</div>
         )}
-        {error && (
-          <div className="text-center text-red-500 mb-4">
-            {error}
-          </div>
-        )}
+        {error && <div className="text-center text-red-500 mb-4">{error}</div>}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {providers.map((provider) => (
             <motion.div
@@ -157,10 +173,21 @@ function Providers() {
                     : "bg-gray-400 cursor-not-allowed"
                 }`}
                 disabled={provider.availabilitystatus !== "available"}
-                onClick={() => handleBooking(provider.id)}
+                onClick={() => handleBookNow(provider.id)}
               >
                 Book Now
               </button>
+
+              {showPaymentModal && selectedProviderId === provider.id && (
+                <Elements stripe={stripePromise}>
+                  <PaymentModal
+                    platformFee={platformFee}
+                    bookingId={provider.id}
+                    onClose={() => setShowPaymentModal(false)}
+                    onPaymentSuccess={() => handlePaymentSuccess(provider.id)}
+                  />
+                </Elements>
+              )}
             </motion.div>
           ))}
         </div>

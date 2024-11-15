@@ -16,8 +16,23 @@ import Location from "./pages/Location/Location";
 import Chat from "./components/Chat";
 import ErrorPage from "./components/ErrorPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import React, { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    // Check if service workers are supported in the browser
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/service-worker.js")
+        .then((registration) => {
+          console.log("Service Worker registered:", registration);
+        })
+        .catch((error) => {
+          console.log("Service Worker registration failed:", error);
+        });
+    }
+  }, []);
+
   return (
     <>
       <BrowserRouter>

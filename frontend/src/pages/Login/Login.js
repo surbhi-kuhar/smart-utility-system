@@ -28,6 +28,8 @@ function Login() {
         }
       );
 
+      console.log(response1);
+
       if (response1.data.user) {
         Cookies.set("token", response1.data.token, { expires: 10 }); // 10 days expiry
         navigate("/");

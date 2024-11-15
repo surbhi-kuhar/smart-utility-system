@@ -8,6 +8,7 @@ const location = require("./routes/location");
 const distance = require("./routes/distance");
 const notify = require("./routes/notify");
 const chat = require("./routes/chat");
+const payment = require("./routes/payment");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const http = require('http');
@@ -27,14 +28,12 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-
-  // Join a specific conversation (room)
+  
   socket.on('joinConversation', (conversationId) => {
     socket.join(conversationId);
     console.log(`User joined conversation: ${conversationId}`);
   });
 
-  // Handle sending messages
   socket.on('sendMessage', ({ conversationId, senderId, content }) => {
     const message = {
       senderId,
@@ -42,10 +41,8 @@ io.on('connection', (socket) => {
       createdAt: new Date(),
     };
 
-    // Emit the message to everyone in the conversation (room)
     io.to(conversationId).emit('receiveMessage', message);
     
-    // Optionally, save the message to the database here.
   });
 
   socket.on('disconnect', () => {
@@ -64,6 +61,7 @@ app.use("/api/v1/location", location);
 app.use("/api/v1/distance", distance);
 app.use("/api/v1/chat",chat);
 app.use("/api/v1/notify",notify);
+app.use("/api/v1/payment",payment);
 
 // mongoose
 //   .connect(process.env.MONGO_URI)

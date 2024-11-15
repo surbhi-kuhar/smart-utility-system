@@ -68,7 +68,7 @@ module.exports.loginUser = async (req, res, next) => {
     if (userAlready) {
       const pass = await bcrypt.compare(password, userAlready.password);
       if (pass) {
-        // Generate a JWT if the password matches
+        
         const token = jwt.sign({ id: userAlready.id }, process.env.JWT_SECRET, {
           expiresIn: "10d",
         });
