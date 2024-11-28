@@ -10,6 +10,7 @@ function ProviderBookings() {
   const [editStatus, setEditStatus] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [amounts, setAmounts] = useState({}); // To store the amount for each booking
+  const [otpValues, setOtpValues] = useState({}); // To store OTP values for each booking
 
   const navigate = useNavigate();
 
@@ -50,37 +51,78 @@ function ProviderBookings() {
     setSelectedStatus(currentStatus);
   };
 
-  const handleStatusChange = (e) => {
-    setSelectedStatus(e.target.value);
+  const handleOtpChange = (bookingId, value) => {
+    setOtpValues((prev) => ({
+      ...prev,
+      [bookingId]: value,
+    }));
   };
 
-  const handleUpdateStatus = async (bookingId) => {
+  // const handleStatusChange = (e) => {
+  //   setSelectedStatus(e.target.value);
+  // };
+
+  // const handleUpdateStatus = async (bookingId) => {
+  //   try {
+  //     const token = Cookies.get("token");
+  //     await axios.post(
+  //       "http://localhost:3300/api/v1/booking/updatestatus",
+  //       { bookingId, bookingStatus: selectedStatus },
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       }
+  //     );
+
+  //     // Update booking status in the state
+  //     setBookings((prevBookings) =>
+  //       prevBookings.map((booking) =>
+  //         booking.id === bookingId
+  //           ? { ...booking, bookingStatus: selectedStatus }
+  //           : booking
+  //       )
+  //     );
+
+  //     setEditStatus(null);
+  //   } catch (err) {
+  //     const errorMessage =
+  //       err.response?.data?.message || "Failed to update booking status.";
+  //     setError(errorMessage);
+  //   }
+  // };
+
+  const handleVerifyOtp = async (bookingId) => {
+    const enteredOtp = otpValues[bookingId];
+    if (!enteredOtp) {
+      alert("Please enter an OTP.");
+      return;
+    }
+
     try {
       const token = Cookies.get("token");
-      await axios.post(
-        "http://localhost:3300/api/v1/booking/updatestatus",
-        { bookingId, bookingStatus: selectedStatus },
+      const response = await axios.post(
+        "http://localhost:3300/api/v1/booking/verifyotp",
+        { bookingId, otp: enteredOtp },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      // Update booking status in the state
-      setBookings((prevBookings) =>
-        prevBookings.map((booking) =>
-          booking.id === bookingId
-            ? { ...booking, bookingStatus: selectedStatus }
-            : booking
-        )
-      );
-
-      setEditStatus(null);
+      if (response.data.verified) {
+        alert("OTP verified successfully. You can start the work now.");
+        setOtpValues((prev) => ({
+          ...prev,
+          [bookingId]: "", // Clear the OTP input for the booking
+        }));
+      } else {
+        alert("OTP verification failed. Please try again.");
+      }
     } catch (err) {
       const errorMessage =
-        err.response?.data?.message || "Failed to update booking status.";
-      setError(errorMessage);
+        err.response?.data?.message || "Failed to verify OTP.";
+      alert(errorMessage);
     }
   };
+
 
   const handleLocationShare = async (bookingId) => {
     if (navigator.geolocation) {
@@ -207,9 +249,9 @@ function ProviderBookings() {
                     <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
                       Booking Date
                     </th>
-                    <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
+                    {/* <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
                       Status
-                    </th>
+                    </th> */}
                     <th className="border border-gray-300 px-2 sm:px-4 py-2 text-sm sm:text-base">
                       Actions
                     </th>
@@ -230,7 +272,7 @@ function ProviderBookings() {
                       <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {booking.bookingDate}
                       </td>
-                      <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
+                      {/* <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {editStatus === booking.id ? (
                           <select
                             value={selectedStatus}
@@ -243,11 +285,11 @@ function ProviderBookings() {
                         ) : (
                           booking.bookingStatus
                         )}
-                      </td>
+                      </td> */}
                       <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
                         {booking.bookingStatus === "PENDING" && (
                           <>
-                            {editStatus === booking.id ? (
+                            {/* {editStatus === booking.id ? (
                               <button
                                 onClick={() => handleUpdateStatus(booking.id)}
                                 className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm"
@@ -266,7 +308,7 @@ function ProviderBookings() {
                               >
                                 Update Status
                               </button>
-                            )}
+                            )} */}
                             <button
                               className="bg-green-500 text-white px-4 py-2 rounded-md text-sm mb-2"
                               onClick={() => handleLocationShare(booking.id)}
@@ -307,6 +349,26 @@ function ProviderBookings() {
                             </button>
                           </>
                         )}
+                      </td>
+
+                      <td className="border border-gray-300 px-2 sm:px-4 py-2 text-sm">
+                        <div className="flex flex-col space-y-2">
+                          <input
+                            type="number"
+                            placeholder="Enter OTP"
+                            value={otpValues[booking.id] || ""}
+                            onChange={(e) =>
+                              handleOtpChange(booking.id, e.target.value)
+                            }
+                            className="border rounded-md px-2 py-1 text-sm"
+                          />
+                          <button
+                            onClick={() => handleVerifyOtp(booking.id)}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm"
+                          >
+                            Verify OTP
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

@@ -18,7 +18,7 @@ module.exports.notify = async (req, res, next) => {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
       include: {
-        user: true, 
+        user: true,
       },
     });
 

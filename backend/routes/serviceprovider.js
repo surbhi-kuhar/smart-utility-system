@@ -6,6 +6,7 @@ const {
   deleteProvider,
   getServiceProviders,
   findServiceProvider,
+  
 } = require("../controllers/serviceprovider");
 const { authenticateToken } = require("../middleware");
 const router = express.Router();

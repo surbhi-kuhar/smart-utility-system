@@ -50,6 +50,8 @@ module.exports.bookService = async (req, res, next) => {
 
     console.log(conversation);
 
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
     const newBooking = await prisma.booking.create({
       data: {
         userId: userId,
@@ -58,6 +60,7 @@ module.exports.bookService = async (req, res, next) => {
         bookingStatus: "PENDING",
         address: user.address,
         conversationId: conversation.id,
+        otp: otp.toString(),
       },
     });
 
@@ -81,7 +84,7 @@ module.exports.bookService = async (req, res, next) => {
               - Customer Address: ${newBooking.address}
               - Booking Date: ${newBooking.bookingDate}
               Please log in to your account to view more details and manage the booking.
-              
+
               Thank you for using Taskmasters!`,
         to: `+91${serviceProvider.mobilenumber}`,
         from: mynumber,
@@ -92,11 +95,71 @@ module.exports.bookService = async (req, res, next) => {
 
     res.status(201).json({
       booking: newBooking,
+      otp: otp,
       message: "Booking successful.",
     });
   } catch (error) {
     console.error("Error booking service:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+module.exports.verifyOtp = async (req, res) => {
+  console.log("verifying OTP ");
+  try {
+    const { bookingId, otp } = req.body;
+    console.log("Received Booking ID:", bookingId);
+    console.log("Received OTP:", otp);
+
+    if (!bookingId || !otp) {
+      return res
+        .status(400)
+        .json({ message: "Booking ID and OTP are required." });
+    }
+
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: { user: true },
+    });
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    console.log("Database OTP:", booking.otp);
+
+    if (String(booking.otp).trim() !== String(otp).trim()) {
+      console.log("OTP mismatch");
+      return res
+        .status(400)
+        .json({ message: "Invalid OTP. Please try again." });
+    }
+
+    const userPhoneNumber = booking.user.mobilenumber;
+    const msg =
+      "Your OTP has been successfully verified for booking. The service provider can now proceed";
+
+    await client.messages.create({
+      body: msg,
+      from: mynumber,
+      to: userPhoneNumber,
+    });
+
+    console.log("OTP verification successful");
+    await prisma.booking.update({
+      where: { id: bookingId },
+      data: { isVerified: true },
+    });
+
+    return res.status(200).json({
+      verified: true,
+      message: "OTP verified successfully. User has been notified.",
+    });
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while verifying OTP." });
   }
 };
 
@@ -108,7 +171,7 @@ module.exports.getAllBookings = async (req, res, next) => {
     const bookings = await prisma.booking.findMany({
       where: { userId: userId },
       include: {
-        serviceProvider: true, // Include serviceProvider even if it's null
+        serviceProvider: true,
       },
     });
 
@@ -124,7 +187,7 @@ module.exports.getAllBookings = async (req, res, next) => {
 
 module.exports.getBookingDetails = async (req, res, next) => {
   console.log("entered booking details controller");
-  const { bookingId } = req.query; // Use req.query to get query parameters
+  const { bookingId } = req.query;
   console.log(bookingId);
 
   try {
@@ -168,9 +231,8 @@ module.exports.cancelService = async (req, res, next) => {
 
 module.exports.getProviderBookings = async (req, res, next) => {
   try {
-    const providerId = req.user.id; // Get provider ID from the request (ensure you have middleware for authentication)
+    const providerId = req.user.id;
 
-    // Fetch bookings where the serviceProviderId matches the provider's ID
     const bookings = await prisma.booking.findMany({
       where: { serviceProviderId: providerId },
       include: {
@@ -181,7 +243,7 @@ module.exports.getProviderBookings = async (req, res, next) => {
           },
         },
       },
-      orderBy: { createdAt: "desc" }, // Order by date of creation
+      orderBy: { createdAt: "desc" },
     });
 
     res.json(bookings);
@@ -198,7 +260,6 @@ module.exports.updateBookingStatus = async (req, res) => {
   const { bookingStatus } = req.body;
 
   try {
-    // Update the booking status in the database
     const updatedBooking = await prisma.booking.update({
       where: { id: bookingId },
       data: { bookingStatus },

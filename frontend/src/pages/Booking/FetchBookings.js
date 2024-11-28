@@ -10,6 +10,7 @@ function FetchBookings() {
   const [rating, setRating] = useState({ bookingId: "", value: 0, review: "" });
   const [ratingError, setRatingError] = useState("");
   const [existingRating, setExistingRating] = useState({});
+
   const [editMode, setEditMode] = useState({}); // State to manage edit mode
   const navigate = useNavigate();
 
@@ -26,6 +27,7 @@ function FetchBookings() {
         );
 
         setBookings(response.data.bookings);
+        console.log(response.data.bookings);
 
         for (const booking of response.data.bookings) {
           if (booking.bookingStatus === "COMPLETED") {
@@ -145,6 +147,32 @@ function FetchBookings() {
     }
   };
 
+  const handleMarkAsCompleted = async (bookingId) => {
+    try {
+      const token = Cookies.get("token");
+      await axios.post(
+        "http://localhost:3300/api/v1/booking/updatestatus",
+        { bookingId, bookingStatus: "COMPLETED" },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // Update booking status in the state
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === bookingId
+            ? { ...booking, bookingStatus: "COMPLETED" }
+            : booking
+        )
+      );
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || "Failed to update booking status.";
+      setError(errorMessage);
+    }
+  };
+
   const handleEditClick = (bookingId) => {
     setEditMode((prev) => ({ ...prev, [bookingId]: true }));
     const ratingData = existingRating[bookingId];
@@ -200,6 +228,12 @@ function FetchBookings() {
                 <strong>Booking Status:</strong> {booking.bookingStatus}
               </p>
               {booking.bookingStatus === "PENDING" && (
+                <p className="text-lg mt-2">
+                  <strong>OTP:</strong> {booking.otp}
+                </p>
+              )}
+
+              {booking.bookingStatus === "PENDING" && (
                 <>
                   <button
                     onClick={() => handleCancelBooking(booking.id)}
@@ -230,9 +264,7 @@ function FetchBookings() {
                         </label>
                         <StarRating
                           value={rating.value}
-                          onChange={(value) =>
-                            setRating({ ...rating, value })
-                          }
+                          onChange={(value) => setRating({ ...rating, value })}
                           className="ml-4"
                         />
                       </div>
@@ -300,6 +332,15 @@ function FetchBookings() {
                     </>
                   )}
                 </div>
+              )}
+
+              {booking.isVerified && booking.bookingStatus === "PENDING" && (
+                <button
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg mt-4"
+                  onClick={() => handleMarkAsCompleted(booking.id)}
+                >
+                  Mark as Completed
+                </button>
               )}
             </li>
           ))}

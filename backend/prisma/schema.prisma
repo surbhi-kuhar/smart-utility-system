@@ -55,6 +55,8 @@ model Booking {
   latitude          Float?
   longitude         Float?
   conversationId    String?         @db.ObjectId
+  otp               String?
+  isVerified        Boolean         @default(false)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   user              User            @relation(fields: [userId], references: [id])
@@ -76,8 +78,8 @@ model Rating {
 
 model Conversation {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String    @db.ObjectId 
-  providerId String    @db.ObjectId 
+  userId     String    @db.ObjectId
+  providerId String    @db.ObjectId
   messages   Message[]
   createdAt  DateTime  @default(now())
 

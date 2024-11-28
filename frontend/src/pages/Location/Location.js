@@ -10,6 +10,7 @@ function Location() {
   const [error, setError] = useState(null);
   const [address, setAddress] = useState("");
   const [time, setTime] = useState(""); // Store the travel time
+  const [otp, setOtp] = useState(null);
   const [loading, setLoading] = useState(true); // For managing loading state
   const [pollAttempts, setPollAttempts] = useState(0); // Keep track of polling attempts
   const MAX_ATTEMPTS = 5; // Set the maximum polling attempts
@@ -59,7 +60,11 @@ function Location() {
   };
 
   useEffect(() => {
-    let interval; // Declare the interval to be cleared later
+    console.log("OTP updated:", otp);
+  }, [otp]);
+
+  useEffect(() => {
+    let interval;
 
     const fetchProviderLocation = async () => {
       try {
@@ -81,12 +86,15 @@ function Location() {
           }
         );
 
-        const { latitude, longitude } = bookingResponse.data.booking;
+        console.log(bookingResponse);
+
+        const { latitude, longitude, otp } = bookingResponse.data.booking;
         const userAddress = bookingResponse.data.booking.user.address;
 
         if (latitude && longitude) {
           // Stop polling after getting the location
           setLocation(`Latitude: ${latitude}, Longitude: ${longitude}`);
+          setOtp(otp);
           setLoading(false);
 
           // Clear interval to stop further polling
@@ -186,6 +194,14 @@ function Location() {
       ) : (
         <p className="text-lg text-center mt-2 text-red-600">
           Unable to get Travel Time currently.
+        </p>
+      )}
+      {otp && (
+        <p className="text-lg text-center mt-4 text-green-600">
+          <b>
+            <i>OTP for Work Start:</i>
+          </b>{" "}
+          {otp}
         </p>
       )}
       <button
