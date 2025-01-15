@@ -1,10 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const twilio = require("twilio");
-const accountSid = process.env.ACCOUNT_SID;
-const authToken = process.env.AUTH_TOKEN;
-const mynumber = process.env.TWILIO_NUMBER;
-const client = new twilio(accountSid, authToken);
+// const accountSid = process.env.ACCOUNT_SID;
+// const authToken = process.env.AUTH_TOKEN;
+// const mynumber = process.env.TWILIO_NUMBER;
+// const client = new twilio(accountSid, authToken);
 
 module.exports.bookService = async (req, res, next) => {
   console.log("entered booking controller");

@@ -4,10 +4,10 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 dotenv.config();
 
-const accountSid = process.env.ACCOUNT_SID;
-const authToken = process.env.AUTH_TOKEN;
-const mynumber = process.env.TWILIO_NUMBER;
-const client = new twilio(accountSid, authToken);
+// const accountSid = process.env.ACCOUNT_SID;
+// const authToken = process.env.AUTH_TOKEN;
+// const mynumber = process.env.TWILIO_NUMBER;
+// const client = new twilio(accountSid, authToken);
 
 module.exports.notify = async (req, res, next) => {
   const { bookingId, amount } = req.body;
