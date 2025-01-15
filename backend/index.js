@@ -31,18 +31,22 @@ io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("joinConversation", (conversationId) => {
-    socket.join(conversationId);
+    socket.join(conversationId); // Join the conversation room
     console.log(`User joined conversation: ${conversationId}`);
   });
 
   socket.on("sendMessage", (messageData) => {
-    const { conversationId } = messageData;
+    const { conversationId, senderId, content } = messageData;
     const message = {
-      ...messageData,
-      createdAt: new Date(),
+      conversationId,
+      senderId,
+      content,
+      createdAt: new Date().toISOString(),
     };
 
-    io.to(conversationId).emit("receiveMessage", message); // Broadcast to the room
+    // Emit the message to all clients in the conversation room
+    io.to(conversationId).emit("receiveMessage", message); 
+    console.log(`Message sent to conversation ${conversationId}:`, message);
   });
 
   socket.on("disconnect", () => {

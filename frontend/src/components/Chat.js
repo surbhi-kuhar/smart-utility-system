@@ -1,17 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; // Corrected import
+import { jwtDecode } from "jwt-decode";
+import { useLocation } from "react-router-dom";
 
 const Chat = () => {
   const locationState = useLocation().state;
-  const { bookingId, conversationId } = locationState;
+  const { conversationId } = locationState;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [error, setError] = useState("");
   const socketRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   const token = Cookies.get("token");
   const decodedToken = token ? jwtDecode(token) : null;
@@ -19,13 +20,18 @@ const Chat = () => {
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = io("https://smart-utility-system.onrender.com");
+      socketRef.current = io("wss://smart-utility-system.onrender.com");
+
       socketRef.current.emit("joinConversation", conversationId);
 
       socketRef.current.on("receiveMessage", (message) => {
-        setMessages((prev) => [...prev, message]); // Functional state update
+        setMessages((prev) => [...prev, message]);
       });
     }
+
+    socketRef.current.on("connect", () => {
+      console.log("WebSocket connected:", socketRef.current.id);
+    });
 
     const fetchMessages = async () => {
       try {
@@ -54,6 +60,12 @@ const Chat = () => {
     };
   }, [conversationId, token]);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const sendMessage = async () => {
     if (newMessage.trim()) {
       const messageData = {
@@ -64,6 +76,7 @@ const Chat = () => {
 
       try {
         socketRef.current.emit("sendMessage", messageData);
+
         await axios.post(
           "https://smart-utility-system.onrender.com/api/v1/chat/message",
           messageData,
@@ -73,6 +86,7 @@ const Chat = () => {
             },
           }
         );
+
         setNewMessage("");
         setError("");
       } catch (err) {
@@ -110,9 +124,13 @@ const Chat = () => {
               </div>
             </div>
           ))}
+
+          <div ref={messagesEndRef} />
         </div>
       </div>
+
       {error && <div className="p-2 text-red-500 bg-red-100">{error}</div>}
+
       <div className="bg-white p-4 sticky bottom-0 w-full">
         <div className="flex items-center space-x-4">
           <input
