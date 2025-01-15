@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import StarRating from "../../components/StarRating";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
 
 function FetchBookings() {
   const [bookings, setBookings] = useState([]);
@@ -200,156 +201,161 @@ function FetchBookings() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-24">
-      <h2 className="text-3xl font-bold mb-6 text-center">My Bookings</h2>
-      {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-      {ratingError && (
-        <p className="text-red-500 mb-4 text-center">{ratingError}</p>
-      )}
-      {bookings.length > 0 ? (
-        <ul className="space-y-4">
-          {bookings.map((booking) => (
-            <li
-              key={booking.id}
-              className="p-6 border rounded-lg shadow-lg bg-white"
-            >
-              <p className="text-lg">
-                <strong>Service Provider:</strong>{" "}
-                {booking.serviceProvider.name}
-              </p>
-              <p className="text-lg">
-                <strong>Service:</strong> {booking.serviceProvider.service}
-              </p>
-              <p className="text-lg">
-                <strong>Booking Date:</strong>{" "}
-                {new Date(booking.bookingDate).toLocaleDateString()}
-              </p>
-              <p className="text-lg">
-                <strong>Booking Status:</strong> {booking.bookingStatus}
-              </p>
-              {booking.bookingStatus === "PENDING" && (
-                <p className="text-lg mt-2">
-                  <strong>OTP:</strong> {booking.otp}
+    <div>
+      <Header />
+      <div className="container mx-auto px-4 py-24">
+        <h2 className="text-3xl font-bold mb-6 text-center">My Bookings</h2>
+        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+        {ratingError && (
+          <p className="text-red-500 mb-4 text-center">{ratingError}</p>
+        )}
+        {bookings.length > 0 ? (
+          <ul className="space-y-4">
+            {bookings.map((booking) => (
+              <li
+                key={booking.id}
+                className="p-6 border rounded-lg shadow-lg bg-white"
+              >
+                <p className="text-lg">
+                  <strong>Service Provider:</strong>{" "}
+                  {booking.serviceProvider.name}
                 </p>
-              )}
+                <p className="text-lg">
+                  <strong>Service:</strong> {booking.serviceProvider.service}
+                </p>
+                <p className="text-lg">
+                  <strong>Booking Date:</strong>{" "}
+                  {new Date(booking.bookingDate).toLocaleDateString()}
+                </p>
+                <p className="text-lg">
+                  <strong>Booking Status:</strong> {booking.bookingStatus}
+                </p>
+                {booking.bookingStatus === "PENDING" && (
+                  <p className="text-lg mt-2">
+                    <strong>OTP:</strong> {booking.otp}
+                  </p>
+                )}
 
-              {booking.bookingStatus === "PENDING" && (
-                <>
-                  <button
-                    onClick={() => handleCancelBooking(booking.id)}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg mt-4"
-                  >
-                    Cancel Booking
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-blue-300 text-white rounded-lg mt-4 ml-3"
-                    onClick={() =>
-                      handleStartChat({ bookingId: booking.id, booking })
-                    }
-                  >
-                    Start a chat
-                  </button>
-                </>
-              )}
-              {booking.bookingStatus === "COMPLETED" && (
-                <div className="mt-4">
-                  {editMode[booking.id] ? (
-                    <>
-                      <div className="flex items-center mb-2">
-                        <label
-                          className="block text-lg font-semibold"
-                          htmlFor={`rating-${booking.id}`}
+                {booking.bookingStatus === "PENDING" && (
+                  <>
+                    <button
+                      onClick={() => handleCancelBooking(booking.id)}
+                      className="px-4 py-2 bg-red-500 text-white rounded-lg mt-4"
+                    >
+                      Cancel Booking
+                    </button>
+                    <button
+                      className="px-4 py-2 bg-blue-300 text-white rounded-lg mt-4 ml-3"
+                      onClick={() =>
+                        handleStartChat({ bookingId: booking.id, booking })
+                      }
+                    >
+                      Start a chat
+                    </button>
+                  </>
+                )}
+                {booking.bookingStatus === "COMPLETED" && (
+                  <div className="mt-4">
+                    {editMode[booking.id] ? (
+                      <>
+                        <div className="flex items-center mb-2">
+                          <label
+                            className="block text-lg font-semibold"
+                            htmlFor={`rating-${booking.id}`}
+                          >
+                            Rate the Service:
+                          </label>
+                          <StarRating
+                            value={rating.value}
+                            onChange={(value) =>
+                              setRating({ ...rating, value })
+                            }
+                            className="ml-4"
+                          />
+                        </div>
+                        <textarea
+                          value={rating.review}
+                          onChange={(e) =>
+                            setRating({
+                              ...rating,
+                              review: e.target.value,
+                            })
+                          }
+                          placeholder="Write a review (optional)"
+                          className="w-full p-2 border rounded mb-2"
+                          rows="3"
+                        ></textarea>
+                        <button
+                          onClick={() => handleRatingSubmit(booking)}
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
                         >
-                          Rate the Service:
-                        </label>
-                        <StarRating
-                          value={rating.value}
-                          onChange={(value) => setRating({ ...rating, value })}
-                          className="ml-4"
-                        />
-                      </div>
-                      <textarea
-                        value={rating.review}
-                        onChange={(e) =>
-                          setRating({
-                            ...rating,
-                            review: e.target.value,
-                          })
-                        }
-                        placeholder="Write a review (optional)"
-                        className="w-full p-2 border rounded mb-2"
-                        rows="3"
-                      ></textarea>
-                      <button
-                        onClick={() => handleRatingSubmit(booking)}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-                      >
-                        {existingRating[booking.id]
-                          ? "Edit Rating & Review"
-                          : "Submit Rating & Review"}
-                      </button>
-                      <button
-                        onClick={() =>
-                          setEditMode((prev) => ({
-                            ...prev,
-                            [booking.id]: false,
-                          }))
-                        }
-                        className="px-4 py-2 bg-gray-500 text-white rounded-lg ml-4"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex items-center mb-2">
-                        <label
-                          className="block text-lg font-semibold"
-                          htmlFor={`rating-${booking.id}`}
+                          {existingRating[booking.id]
+                            ? "Edit Rating & Review"
+                            : "Submit Rating & Review"}
+                        </button>
+                        <button
+                          onClick={() =>
+                            setEditMode((prev) => ({
+                              ...prev,
+                              [booking.id]: false,
+                            }))
+                          }
+                          className="px-4 py-2 bg-gray-500 text-white rounded-lg ml-4"
                         >
-                          Rate the Service:
-                        </label>
-                        <StarRating
-                          value={existingRating[booking.id]?.rating || 0}
-                          onChange={() => {}}
-                          readOnly
-                          className="ml-4"
-                        />
-                      </div>
-                      {existingRating[booking.id]?.review && (
-                        <p className="text-gray-700 italic">
-                          {existingRating[booking.id].review}
-                        </p>
-                      )}
-                      <button
-                        onClick={() => handleEditClick(booking.id)}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg mt-4"
-                      >
-                        {existingRating[booking.id]
-                          ? "Edit Rating & Review"
-                          : "Rate Now"}
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center mb-2">
+                          <label
+                            className="block text-lg font-semibold"
+                            htmlFor={`rating-${booking.id}`}
+                          >
+                            Rate the Service:
+                          </label>
+                          <StarRating
+                            value={existingRating[booking.id]?.rating || 0}
+                            onChange={() => {}}
+                            readOnly
+                            className="ml-4"
+                          />
+                        </div>
+                        {existingRating[booking.id]?.review && (
+                          <p className="text-gray-700 italic">
+                            {existingRating[booking.id].review}
+                          </p>
+                        )}
+                        <button
+                          onClick={() => handleEditClick(booking.id)}
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg mt-4"
+                        >
+                          {existingRating[booking.id]
+                            ? "Edit Rating & Review"
+                            : "Rate Now"}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
 
-              {booking.isVerified && booking.bookingStatus === "PENDING" && (
-                <button
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg mt-4"
-                  onClick={() => handleMarkAsCompleted(booking.id)}
-                >
-                  Mark as Completed
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-center text-lg text-gray-600">
-          You have no bookings yet.
-        </p>
-      )}
+                {booking.isVerified && booking.bookingStatus === "PENDING" && (
+                  <button
+                    className="px-4 py-2 bg-green-500 text-white rounded-lg mt-4"
+                    onClick={() => handleMarkAsCompleted(booking.id)}
+                  >
+                    Mark as Completed
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-center text-lg text-gray-600">
+            You have no bookings yet.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

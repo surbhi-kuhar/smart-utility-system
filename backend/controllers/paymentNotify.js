@@ -26,11 +26,11 @@ module.exports.notify = async (req, res, next) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    await client.messages.create({
-      body: `Dear ${booking.user.name}, your payment of ₹${amount} is due for the service on ${booking.bookingDate}. Please contact your service provider for further details.`,
-      to: `+91${booking.user.mobilenumber}`,
-      from: mynumber,
-    });
+    // await client.messages.create({
+    //   body: `Dear ${booking.user.name}, your payment of ₹${amount} is due for the service on ${booking.bookingDate}. Please contact your service provider for further details.`,
+    //   to: `+91${booking.user.mobilenumber}`,
+    //   from: mynumber,
+    // });
 
     res.json({
       found: true,

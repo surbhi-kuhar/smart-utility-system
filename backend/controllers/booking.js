@@ -78,17 +78,17 @@ module.exports.bookService = async (req, res, next) => {
       console.log(newBooking.bookingDate);
       console.log(serviceProvider.mobilenumber);
 
-      await client.messages.create({
-        body: `Hello ${serviceProvider.name}, you have a new booking from Taskmasters!
-              Details:
-              - Customer Address: ${newBooking.address}
-              - Booking Date: ${newBooking.bookingDate}
-              Please log in to your account to view more details and manage the booking.
+      // await client.messages.create({
+      //   body: `Hello ${serviceProvider.name}, you have a new booking from Taskmasters!
+      //         Details:
+      //         - Customer Address: ${newBooking.address}
+      //         - Booking Date: ${newBooking.bookingDate}
+      //         Please log in to your account to view more details and manage the booking.
 
-              Thank you for using Taskmasters!`,
-        to: `+91${serviceProvider.mobilenumber}`,
-        from: mynumber,
-      });
+      //         Thank you for using Taskmasters!`,
+      //   to: `+91${serviceProvider.mobilenumber}`,
+      //   from: mynumber,
+      // });
     } else {
       console.error("Service provider not found");
     }
@@ -139,11 +139,11 @@ module.exports.verifyOtp = async (req, res) => {
     const msg =
       "Your OTP has been successfully verified for booking. The service provider can now proceed";
 
-    await client.messages.create({
-      body: msg,
-      from: mynumber,
-      to: userPhoneNumber,
-    });
+    // await client.messages.create({
+    //   body: msg,
+    //   from: mynumber,
+    //   to: userPhoneNumber,
+    // });
 
     console.log("OTP verification successful");
     await prisma.booking.update({
