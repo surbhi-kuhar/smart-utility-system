@@ -4,33 +4,33 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Corrected import
-import Header from "./Header";
 
 const Chat = () => {
   const locationState = useLocation().state;
   const { bookingId, conversationId } = locationState;
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [error, setError] = useState(""); // State for error messages
+  const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // Decode token to get the logged-in user's ID (whether it's a provider or customer)
   const token = Cookies.get("token");
-  const decodedToken = token ? jwtDecode(token) : null; // Corrected usage
+  const decodedToken = token ? jwtDecode(token) : null;
   const loggedInUserId = decodedToken?.id;
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = io("http://localhost:3300");
-    }
+      socketRef.current = io("https://smart-utility-system.onrender.com");
+      socketRef.current.emit("joinConversation", conversationId);
 
-    socketRef.current.emit("joinConversation", conversationId);
+      socketRef.current.on("receiveMessage", (message) => {
+        setMessages((prev) => [...prev, message]); // Functional state update
+      });
+    }
 
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          `https://smart-utility-system.onrender.com/chat/messages/${conversationId}`,
+          `https://smart-utility-system.onrender.com/api/v1/chat/messages/${conversationId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -45,10 +45,6 @@ const Chat = () => {
 
     fetchMessages();
 
-    socketRef.current.on("receiveMessage", (message) => {
-      setMessages((prev) => [...prev, message]);
-    });
-
     return () => {
       if (socketRef.current) {
         socketRef.current.emit("leaveConversation", conversationId);
@@ -62,14 +58,14 @@ const Chat = () => {
     if (newMessage.trim()) {
       const messageData = {
         conversationId,
-        senderId: loggedInUserId, // Use the decoded token ID as the sender
+        senderId: loggedInUserId,
         content: newMessage,
       };
 
       try {
         socketRef.current.emit("sendMessage", messageData);
         await axios.post(
-          "https://smart-utility-system.onrender.com/chat/message",
+          "https://smart-utility-system.onrender.com/api/v1/chat/message",
           messageData,
           {
             headers: {
@@ -78,12 +74,11 @@ const Chat = () => {
           }
         );
         setNewMessage("");
-        setError(""); // Clear any previous error
+        setError("");
       } catch (err) {
-        // Handle the error response from the backend
         const errorMessage =
           err.response?.data?.message || "An error occurred. Please try again.";
-        setError(errorMessage); // Set error message state
+        setError(errorMessage);
       }
     }
   };
@@ -117,10 +112,7 @@ const Chat = () => {
           ))}
         </div>
       </div>
-
-      {/* Error Message Display */}
       {error && <div className="p-2 text-red-500 bg-red-100">{error}</div>}
-
       <div className="bg-white p-4 sticky bottom-0 w-full">
         <div className="flex items-center space-x-4">
           <input

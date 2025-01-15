@@ -11,8 +11,8 @@ const chat = require("./routes/chat");
 const payment = require("./routes/payment");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const http = require('http');
-const { Server } = require('socket.io');
+const http = require("http");
+const { Server } = require("socket.io");
 
 dotenv.config();
 
@@ -21,32 +21,32 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://smart-utility-system.onrender.com", 
-    methods: ["GET", "POST"]
-  }
+    origin: "https://smart-utility-system-1.onrender.com",
+    methods: ["GET", "POST"],
+    credentials: true, // Allow cookies if required
+  },
 });
 
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-  
-  socket.on('joinConversation', (conversationId) => {
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("joinConversation", (conversationId) => {
     socket.join(conversationId);
     console.log(`User joined conversation: ${conversationId}`);
   });
 
-  socket.on('sendMessage', ({ conversationId, senderId, content }) => {
+  socket.on("sendMessage", (messageData) => {
+    const { conversationId } = messageData;
     const message = {
-      senderId,
-      content,
+      ...messageData,
       createdAt: new Date(),
     };
 
-    io.to(conversationId).emit('receiveMessage', message);
-    
+    io.to(conversationId).emit("receiveMessage", message); // Broadcast to the room
   });
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
   });
 });
 
@@ -59,9 +59,9 @@ app.use("/api/v1/booking", booking);
 app.use("/api/v1/rating", rating);
 app.use("/api/v1/location", location);
 app.use("/api/v1/distance", distance);
-app.use("/api/v1/chat",chat);
-app.use("/api/v1/notify",notify);
-app.use("/api/v1/payment",payment);
+app.use("/api/v1/chat", chat);
+app.use("/api/v1/notify", notify);
+app.use("/api/v1/payment", payment);
 
 // mongoose
 //   .connect(process.env.MONGO_URI)
