@@ -22,7 +22,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = io("http://localhost:3300");
+      socketRef.current = io("https://smart-utility-system.onrender.com");
     }
 
     socketRef.current.emit("joinConversation", conversationId);
@@ -30,7 +30,7 @@ const Chat = () => {
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3300/api/v1/chat/messages/${conversationId}`,
+          `https://smart-utility-system.onrender.com/api/v1/chat/messages/${conversationId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -69,7 +69,7 @@ const Chat = () => {
       try {
         socketRef.current.emit("sendMessage", messageData);
         await axios.post(
-          "http://localhost:3300/api/v1/chat/message",
+          "https://smart-utility-system.onrender.com/api/v1/chat/message",
           messageData,
           {
             headers: {
@@ -90,7 +90,7 @@ const Chat = () => {
 
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <div className="flex flex-col h-screen">
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto p-4 bg-gray-100">

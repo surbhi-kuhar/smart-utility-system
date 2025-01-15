@@ -11,7 +11,7 @@ const BookingModal = ({ serviceProviderId, onClose }) => {
   const handleBooking = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3300/api/v1/booking/book",
+        "https://smart-utility-system.onrender.com/api/v1/booking/book",
         {
           serviceProviderId,
           bookingDate,

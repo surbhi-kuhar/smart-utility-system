@@ -89,9 +89,9 @@ const Header = () => {
             <Link to="/about" className="text-gray-800 hover:text-blue-500">
               About
             </Link>
-            <Link to="/contact" className="text-gray-800 hover:text-blue-500">
+            {/* <Link to="/contact" className="text-gray-800 hover:text-blue-500">
               Contact
-            </Link>
+            </Link> */}
             {isLoggedIn ? (
               <>
                 <Link
@@ -163,12 +163,12 @@ const Header = () => {
             >
               About
             </Link>
-            <Link
+            {/* <Link
               to="/contact"
               className="block py-2 text-gray-800 hover:bg-gray-100 text-center"
             >
               Contact
-            </Link>
+            </Link> */}
             {isLoggedIn ? (
               <>
                 <Link

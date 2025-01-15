@@ -32,7 +32,8 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
     const fetchProfileData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3300/api/v1/serviceprovider/find`,
+          "https://smart-utility-system.onrender.com/api/v1/serviceprovider/find",
+          // `http://localhost:3300/api/v1/serviceprovider/find`,
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
@@ -59,7 +60,8 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
     setErrorMessage(""); // Reset error message
     try {
       await axios.post(
-        `http://localhost:3300/api/v1/serviceprovider/update`,
+        "https://smart-utility-system.onrender.com/api/v1/serviceprovider/update",
+        // `http://localhost:3300/api/v1/serviceprovider/update`,
         profileData,
         {
           headers: {
@@ -81,7 +83,8 @@ const ServiceProviderProfile = ({ serviceProviderId }) => {
     setErrorMessage(""); // Reset error message
     try {
       await axios.delete(
-        `http://localhost:3300/api/v1/serviceprovider/delete`,
+        "https://smart-utility-system.onrender.com/api/v1/serviceprovider/delete",
+        // `http://localhost:3300/api/v1/serviceprovider/delete`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("token")}`,

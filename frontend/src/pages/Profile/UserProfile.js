@@ -20,7 +20,8 @@ const UserProfile = ({ userId }) => {
     const fetchProfileData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3300/api/v1/user/find`,
+          "https://smart-utility-system.onrender.com/api/v1/user/find",
+          // `http://localhost:3300/api/v1/user/find`,
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
@@ -55,7 +56,8 @@ const UserProfile = ({ userId }) => {
   const handleUpdate = async () => {
     try {
       const { data } = await axios.post(
-        `http://localhost:3300/api/v1/user/update`,
+        'https://smart-utility-system.onrender.com/api/v1/user/update',
+        // `http://localhost:3300/api/v1/user/update`,
         profileData,
         {
           headers: {
@@ -79,7 +81,8 @@ const UserProfile = ({ userId }) => {
   const handleDelete = async () => {
     try {
       const { data } = await axios.delete(
-        `http://localhost:3300/api/v1/user/delete`,
+        "https://smart-utility-system.onrender.com/api/v1/user/delete",
+        // `http://localhost:3300/api/v1/user/delete`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("token")}`,

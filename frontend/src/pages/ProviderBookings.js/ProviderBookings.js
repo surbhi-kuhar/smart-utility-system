@@ -18,7 +18,8 @@ function ProviderBookings() {
     try {
       const token = Cookies.get("token");
       const response = await axios.get(
-        "http://localhost:3300/api/v1/booking/getproviderbookings",
+        "https://smart-utility-system.onrender.com/api/v1/booking/getproviderbookings",
+        // "http://localhost:3300/api/v1/booking/getproviderbookings",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -100,7 +101,8 @@ function ProviderBookings() {
     try {
       const token = Cookies.get("token");
       const response = await axios.post(
-        "http://localhost:3300/api/v1/booking/verifyotp",
+        "https://smart-utility-system.onrender.com/api/v1/booking/verifyotp",
+        // "http://localhost:3300/api/v1/booking/verifyotp",
         { bookingId, otp: enteredOtp },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -139,7 +141,8 @@ function ProviderBookings() {
           try {
             const token = Cookies.get("token");
             await axios.post(
-              "http://localhost:3300/api/v1/location/locate",
+              "https://smart-utility-system.onrender.com/api/v1/location/locate",
+              // "http://localhost:3300/api/v1/location/locate",
               {
                 bookingId,
                 latitude,
@@ -196,7 +199,8 @@ function ProviderBookings() {
     try {
       const token = Cookies.get("token");
       const response = await axios.post(
-        "http://localhost:3300/api/v1/notify/pay",
+        "https://smart-utility-system.onrender.com/api/v1/notify/pay",
+        // "http://localhost:3300/api/v1/notify/pay",
         { bookingId, amount }, // Include amount in the request
         {
           headers: { Authorization: `Bearer ${token}` },

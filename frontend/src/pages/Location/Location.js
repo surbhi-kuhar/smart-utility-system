@@ -33,7 +33,8 @@ function Location() {
       const token = Cookies.get("token");
 
       const distanceResponse = await axios.get(
-        `http://localhost:3300/api/v1/distance/distancematrix`,
+        "https://smart-utility-system.onrender.com/api/v1/distance/distancematrix",
+        // `http://localhost:3300/api/v1/distance/distancematrix`,
         {
           params: {
             origins: userAddress,
@@ -78,7 +79,8 @@ function Location() {
         const token = Cookies.get("token");
 
         const bookingResponse = await axios.get(
-          `http://localhost:3300/api/v1/booking/getbooking`,
+          'https://smart-utility-system.onrender.com/api/v1/booking/getbooking',
+          // `http://localhost:3300/api/v1/booking/getbooking`,
           {
             params: { bookingId },
             headers: {

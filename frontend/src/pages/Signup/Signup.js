@@ -80,7 +80,8 @@ const CustomerSignupForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3300/api/v1/user/create",
+        "https://smart-utility-system.onrender.com/api/v1/user/create",
+        // "http://localhost:3300/api/v1/user/create",
         formdata
       );
 
@@ -227,7 +228,8 @@ const ServiceProviderSignupForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3300/api/v1/serviceprovider/create",
+        "https://smart-utility-system.onrender.com/api/v1/serviceprovider/create",
+        // "http://localhost:3300/api/v1/serviceprovider/create",
         formdata
       );
 

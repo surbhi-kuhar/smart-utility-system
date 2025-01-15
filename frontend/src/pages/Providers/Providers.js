@@ -55,7 +55,8 @@ function Providers() {
     try {
       const bookingDate = new Date();
       const response = await axios.post(
-        "http://localhost:3300/api/v1/booking/book",
+        "https://smart-utility-system.onrender.com/api/v1/booking/book",
+        // "http://localhost:3300/api/v1/booking/book",
         {
           serviceProviderId,
           bookingDate,
@@ -95,7 +96,8 @@ function Providers() {
     const fetchProviders = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:3300/api/v1/serviceprovider/service/${service}`
+          `https://smart-utility-system.onrender.com/api/v1/serviceprovider/service/${service}`
+          // `http://localhost:3300/api/v1/serviceprovider/service/${service}`
         );
         setProviders(data.serviceProviders);
         setLoading(false);

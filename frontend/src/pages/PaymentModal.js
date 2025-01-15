@@ -14,7 +14,8 @@ const PaymentModal = ({ platformFee, onClose, onPaymentSuccess }) => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3300/api/v1/payment/create-payment-intent",
+        "https://smart-utility-system.onrender.com/api/v1/payment/create-payment-intent",
+        // "http://localhost:3300/api/v1/payment/create-payment-intent",
         { amount: platformFee },
         {
           headers: {

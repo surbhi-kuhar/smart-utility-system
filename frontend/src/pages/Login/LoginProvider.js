@@ -18,7 +18,8 @@ function LoginProvider() {
     try {
       console.log("response1");
       const response1 = await axios.post(
-        "http://localhost:3300/api/v1/serviceprovider/login",
+        "https://smart-utility-system.onrender.com/api/v1/serviceprovider/login",
+        // "http://localhost:3300/api/v1/serviceprovider/login",
         {
           mobilenumber: mobile,
           password: password,

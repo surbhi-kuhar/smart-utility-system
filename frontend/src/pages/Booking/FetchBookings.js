@@ -19,7 +19,7 @@ function FetchBookings() {
     const fetchBookings = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3300/api/v1/booking/allbookings",
+          "https://smart-utility-system.onrender.com/api/v1/booking/allbookings",
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
@@ -34,7 +34,7 @@ function FetchBookings() {
           if (booking.bookingStatus === "COMPLETED") {
             try {
               const ratingResponse = await axios.post(
-                "http://localhost:3300/api/v1/rating/getrating",
+                "https://smart-utility-system.onrender.com/api/v1/rating/getrating",
                 {
                   serviceProviderId: booking.serviceProvider.id,
                 },
@@ -67,7 +67,7 @@ function FetchBookings() {
   const handleCancelBooking = async (bookingId) => {
     try {
       await axios.delete(
-        `http://localhost:3300/api/v1/booking/cancel/${bookingId}`,
+        `https://smart-utility-system.onrender.com/api/v1/booking/cancel/${bookingId}`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("token")}`,
@@ -93,7 +93,7 @@ function FetchBookings() {
     try {
       if (existingRating[booking.id]) {
         await axios.post(
-          "http://localhost:3300/api/v1/rating/update",
+          "https://smart-utility-system.onrender.com/api/v1/rating/update",
           {
             ratingId: existingRating[booking.id].id,
             rating: rating.value,
@@ -108,7 +108,7 @@ function FetchBookings() {
         alert("Rating updated successfully!");
       } else {
         await axios.post(
-          "http://localhost:3300/api/v1/rating/rate",
+          "https://smart-utility-system.onrender.com/api/v1/rating/rate",
           {
             serviceProviderId: booking.serviceProvider.id,
             rating: rating.value,
@@ -124,7 +124,7 @@ function FetchBookings() {
       }
 
       const ratingResponse = await axios.post(
-        "http://localhost:3300/api/v1/rating/getrating",
+        "https://smart-utility-system.onrender.com/api/v1/rating/getrating",
         {
           serviceProviderId: booking.serviceProvider.id,
         },
@@ -152,7 +152,8 @@ function FetchBookings() {
     try {
       const token = Cookies.get("token");
       await axios.post(
-        "http://localhost:3300/api/v1/booking/updatestatus",
+        "https://smart-utility-system.onrender.com/api/v1/booking/updatestatus",
+        // "http://localhost:3300/api/v1/booking/updatestatus",
         { bookingId, bookingStatus: "COMPLETED" },
         {
           headers: { Authorization: `Bearer ${token}` },
